@@ -87,6 +87,14 @@ resource "aws_instance" "e3s_server" {
     Name = local.e3s_server_instance_name
   }
 
+  ebs_block_device {
+    device_name = "/dev/sda1"
+    delete_on_termination = true
+    encrypted             = true
+    volume_type           = "gp3"
+    volume_size           = 100
+  }
+
   user_data = templatefile("./ec2_data/e3s_user_data.sh", {
     region                   = var.region
     cluster_name             = local.e3s_cluster_name
