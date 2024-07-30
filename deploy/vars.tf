@@ -50,6 +50,11 @@ variable "data_layer_remote" {
   default = true
 }
 
+variable "profile" {
+  type = string
+  default = ""
+}
+
 variable "remote_db" {
   type = object({
     username = string
@@ -137,6 +142,6 @@ locals {
   e3s_log_group_name               = join("-", [local.service_name, var.environment, "log-group"])
 
   e3s_rds_subnet_name       = join("-", [local.service_name, var.environment, "rds", "subnet"])
-  e3s_rds_db_name           = join("_", [local.service_name, var.environment, "postgres"])
+  e3s_rds_db_name           = join("-", [local.service_name, var.environment, "postgres"])
   e3s_serverless_cache_name = join("-", [local.service_name, var.environment, "redis"])
 }

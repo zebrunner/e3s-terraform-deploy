@@ -27,6 +27,7 @@ git clone https://github.com/zebrunner/e3s-terraform-deploy.git && cd ./e3s-terr
 * `enable_cloudwatch` - Value type: boolean. Default value: `false`. Enables tasks logs display at aws ecs console.
 * `e3s_server_instance_type` - Value type: string. Default value: `m5n.large`. Instance type for e3s-server.
 * `data_layer_remote` - Value type: boolean. Default value: `true`. Determines whether to create rds and elasticache services in aws cloud or use local ones instead.
+* `profile` - Value type: string. Default value: `None`. Aws profile to use in terraform provider.
 * `remote_db` - Value type: object. Default value: 
 `{
     username = "postgres"

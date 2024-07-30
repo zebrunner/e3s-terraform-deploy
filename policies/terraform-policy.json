@@ -1,0 +1,239 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "NoConstraints",
+            "Effect": "Allow",
+            "Action": [
+                "logs:DescribeLogGroups",
+                "elasticloadbalancing:DescribeTags",
+                "elasticloadbalancing:DescribeTargetGroups",
+                "elasticloadbalancing:DescribeTargetGroupAttributes",
+                "elasticloadbalancing:DescribeLoadBalancers",
+                "elasticloadbalancing:DescribeLoadBalancerAttributes",
+                "elasticloadbalancing:DescribeListeners",
+                "rds:DescribeDBInstances",
+                "autoscaling:DescribeScalingActivities",
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribePolicies"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "ECS",
+            "Effect": "Allow",
+            "Action": [
+                "ecs:TagResource",
+                "ecs:CreateCluster",
+                "ecs:PutClusterCapacityProviders",
+                "ecs:DescribeClusters",
+                "ecs:DeleteCluster",
+                "ecs:CreateCapacityProvider",
+                "ecs:DescribeCapacityProviders",
+                "ecs:DeleteCapacityProvider"
+            ],
+            "Resource": [
+                "arn:aws:ecs:{region}:{account}:cluster/e3s-{env}",
+                "arn:aws:ecs:{region}:{account}:capacity-provider/e3s-{env}-linux-capacityprovider",
+                "arn:aws:ecs:{region}:{account}:capacity-provider/e3s-{env}-windows-capacityprovider"
+            ]
+        },
+        {
+            "Sid": "Autoscaling",
+            "Effect": "Allow",
+            "Action": [
+                "autoscaling:CreateOrUpdateTags",
+                "autoscaling:CreateAutoScalingGroup",
+                "autoscaling:DeleteAutoScalingGroup",
+                "autoscaling:PutScalingPolicy",
+                "autoscaling:DeletePolicy",
+                "autoscaling:UpdateAutoScalingGroup"
+            ],
+            "Resource": [
+                "arn:aws:autoscaling:{region}:{account}:autoScalingGroup:*:autoScalingGroupName/e3s-{env}-linux-asg",
+                "arn:aws:autoscaling:{region}:{account}:autoScalingGroup:*:autoScalingGroupName/e3s-{env}-windows-asg"
+            ]
+        },
+        {
+            "Sid": "IAM",
+            "Effect": "Allow",
+            "Action": [
+                "iam:TagRole",
+                "iam:TagPolicy",
+                "iam:TagInstanceProfile",
+                "iam:CreatePolicy",
+                "iam:GetPolicy",
+                "iam:ListPolicyVersions",
+                "iam:GetPolicyVersion",
+                "iam:DeletePolicy",
+                "iam:CreateRole",
+                "iam:AttachRolePolicy",
+                "iam:GetRole",
+                "iam:ListRolePolicies",
+                "iam:ListAttachedRolePolicies",
+                "iam:ListInstanceProfilesForRole",
+                "iam:DetachRolePolicy",
+                "iam:DeleteRole",
+                "iam:CreateInstanceProfile",
+                "iam:GetInstanceProfile",
+                "iam:DeleteInstanceProfile",
+                "iam:AddRoleToInstanceProfile",
+                "iam:RemoveRoleFromInstanceProfile"
+            ],
+            "Resource": [
+                "arn:aws:iam::{account}:policy/e3s-{env}-policy",
+                "arn:aws:iam::{account}:policy/e3s-{env}-agent-policy",
+                "arn:aws:iam::{account}:policy/e3s-{env}-task-policy",
+                "arn:aws:iam::{account}:policy/{bucket_name}-policy",
+                "arn:aws:iam::{account}:role/e3s-{env}-role",
+                "arn:aws:iam::{account}:role/e3s-{env}-agent-role",
+                "arn:aws:iam::{account}:role/e3s-{env}-task-role",
+                "arn:aws:iam::{account}:instance-profile/e3s-{env}-role",
+                "arn:aws:iam::{account}:instance-profile/e3s-{env}-agent-role"
+            ]
+        },
+        {
+            "Sid": "IAMRoleAssign",
+            "Effect": "Allow",
+            "Action": [
+                "iam:PassRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::{account}:role/e3s-{env}-role",
+                "arn:aws:iam::{account}:role/e3s-{env}-agent-role",
+                "arn:aws:iam::{account}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
+            ]
+        },
+        {
+            "Sid": "CloudWatch",
+            "Effect": "Allow",
+            "Action": [
+                "logs:TagResource",
+                "logs:CreateLogGroup",
+                "logs:PutRetentionPolicy",
+                "logs:DescribeLogGroups",
+                "logs:ListTagsForResource",
+                "logs:DeleteLogGroup"
+            ],
+            "Resource": [
+                "arn:aws:logs:{region}:{account}:log-group:e3s-{env}-log-group*"
+            ]
+        },
+        {
+            "Sid": "S3",
+            "Effect": "Allow",
+            "Action": [
+                "s3:CreateBucket",
+                "s3:ListBucket",
+                "s3:ListBucketVersions",
+                "s3:GetBucketPolicy",
+                "s3:GetBucketAcl",
+                "s3:GetBucketCors",
+                "s3:GetBucketWebsite",
+                "s3:GetBucketVersioning",
+                "s3:GetAccelerateConfiguration",
+                "s3:GetBucketRequestPayment",
+                "s3:GetBucketLogging",
+                "s3:GetLifecycleConfiguration",
+                "s3:GetReplicationConfiguration",
+                "s3:GetEncryptionConfiguration",
+                "s3:GetBucketObjectLockConfiguration",
+                "s3:GetBucketTagging",
+                "s3:DeleteBucket",
+                "s3:PutBucketTagging",
+                "s3:PutBucketPolicy",
+                "s3:DeleteBucketPolicy",
+                "s3:DeleteObject",
+                "s3:DeleteObjectVersion"
+            ],
+            "Resource": [
+                "arn:aws:s3:::{bucket_name}",
+                "arn:aws:s3:::{bucket_name}/*"
+            ]
+        },
+        {
+            "Sid": "ELBV2",
+            "Effect": "Allow",
+            "Action": [
+                "elasticloadbalancing:AddTags",
+                "elasticloadbalancing:CreateTargetGroup",
+                "elasticloadbalancing:ModifyTargetGroupAttributes",
+                "elasticloadbalancing:DeleteTargetGroup",
+                "elasticloadbalancing:CreateLoadBalancer",
+                "elasticloadbalancing:ModifyLoadBalancerAttributes",
+                "elasticloadbalancing:DeleteLoadBalancer",
+                "elasticloadbalancing:CreateListener",
+                "elasticloadbalancing:DeleteListener"
+            ],
+            "Resource": [
+                "arn:aws:elasticloadbalancing:{region}:{account}:targetgroup/e3s-{env}-tg/*",
+                "arn:aws:elasticloadbalancing:{region}:{account}:loadbalancer/app/e3s-{env}-alb/*",
+                "arn:aws:elasticloadbalancing:{region}:{account}:listener/app/e3s-{env}-alb/*"
+            ]
+        },
+        {
+            "Sid": "RDS",
+            "Effect": "Allow",
+            "Action": [
+                "rds:AddTagsToResource",
+                "rds:ListTagsForResource",
+                "rds:CreateDBSubnetGroup",
+                "rds:DescribeDBSubnetGroups",
+                "rds:DeleteDBSubnetGroup",
+                "rds:CreateDBInstance",
+                "rds:DeleteDBInstance"
+            ],
+            "Resource": [
+                "arn:aws:rds:{region}:{account}:subgrp:e3s-{env}-rds-subnet",
+                "arn:aws:rds:{region}:{account}:db:e3s-{env}-postgres*"
+            ]
+        },
+        {
+            "Sid": "ElastiCache",
+            "Effect": "Allow",
+            "Action": [
+                "elasticache:AddTagsToResource",
+                "elasticache:ListTagsForResource",
+                "elasticache:CreateServerlessCache",
+                "elasticache:DescribeServerlessCaches",
+                "elasticache:DeleteServerlessCache"
+            ],
+            "Resource": [
+                "arn:aws:elasticache:{region}:{account}:serverlesscache:e3s-{env}-redis"
+            ]
+        },
+        {
+            "Sid": "ElastiCacheEC2DependentCreate",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateVpcEndpoint",
+                "ec2:CreateTags"
+            ],
+            "Resource": [
+                "arn:aws:ec2:{region}:{account}:vpc-endpoint/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestTag/AmazonElastiCacheManaged": true
+                }
+            }
+        },
+        {
+            "Sid": "ElastiCacheEC2DependentDelete",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DeleteVpcEndpoints"
+            ],
+            "Resource": [
+                "arn:aws:ec2:{region}:{account}:vpc-endpoint/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "ec2:ResourceTag/AmazonElastiCacheManaged": true
+                }
+            }
+        }
+    ]
+}

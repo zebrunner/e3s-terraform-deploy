@@ -1,0 +1,83 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "EC2ByRegion",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeInstanceTypeOfferings",
+                "ec2:DescribeImages",
+                "ec2:DescribeAvailabilityZones",
+                "ec2:DescribeKeyPairs",
+                "ec2:DescribeVpcs",
+                "ec2:DescribeAddresses",
+                "ec2:DescribeAddressesAttribute",
+                "ec2:DescribeInternetGateways",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSecurityGroupRules",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DescribeRouteTables",
+                "ec2:DescribeNatGateways",
+                "ec2:DescribeVpcEndpoints",
+                "ec2:DescribePrefixLists",
+                "ec2:DescribeLaunchTemplates",
+                "ec2:DescribeLaunchTemplateVersions",
+                "ec2:DescribeInstances",
+                "ec2:DescribeInstanceTypes",
+                "ec2:DescribeTags",
+                "ec2:DescribeVolumes",
+                "ec2:DescribeInstanceAttribute"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringLike": {
+                    "ec2:Region": "{region}"
+                }
+            }
+        },
+        {
+            "Sid": "Tagging",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateTags"
+            ],
+            "Resource": [
+                "arn:aws:ec2:{region}:{account}:vpc/*",
+                "arn:aws:ec2:{region}:{account}:security-group/*",
+                "arn:aws:ec2:{region}:{account}:subnet/*",
+                "arn:aws:ec2:{region}:{account}:key-pair/e3s-{env}-agent",
+                "arn:aws:ec2:{region}:{account}:elastic-ip/*",
+                "arn:aws:ec2:{region}:{account}:internet-gateway/*",
+                "arn:aws:ec2:{region}:{account}:route-table/*",
+                "arn:aws:ec2:{region}:{account}:vpc-endpoint/*",
+                "arn:aws:ec2:{region}:{account}:natgateway/*",
+                "arn:aws:ec2:{region}:{account}:launch-template/*",
+                "arn:aws:ec2:{region}:{account}:security-group-rule/*",
+                "arn:aws:ec2:{region}:{account}:volume/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestTag/Name": "e3s",
+                    "aws:RequestTag/Environment": "{env}"
+                }
+            }
+        },
+        {
+            "Sid": "E3SServerTagging",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateTags"
+            ],
+            "Resource": [
+                "arn:aws:ec2:{region}:{account}:instance/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestTag/Name": "e3s-{env}",
+                    "aws:RequestTag/Environment": "{env}"
+                }
+            }
+        }
+    ]
+}
