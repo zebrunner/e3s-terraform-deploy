@@ -154,6 +154,30 @@
             ]
         },
         {
+            "Sid": "RemoteStateBucketCheck",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::{state_bucket_name}"
+        },
+        {
+            "Effect": "RemoteStateBucketSave",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": "arn:aws:s3:::{state_bucket_name}/{state_bucket_key}"
+        },
+        {
+            "Sid": "RemoteStateLock",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:PutItem",
+                "dynamodb:GetItem",
+                "dynamodb:DeleteItem"
+            ],
+            "Resource": "arn:aws:dynamodb:{region}:{account}:table/{state_dynamodb_table}"
+        },
+        {
             "Sid": "ELBV2",
             "Effect": "Allow",
             "Action": [

@@ -51,7 +51,7 @@ variable "data_layer_remote" {
 }
 
 variable "profile" {
-  type = string
+  type    = string
   default = ""
 }
 
