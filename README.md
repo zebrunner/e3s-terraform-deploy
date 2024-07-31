@@ -1,5 +1,48 @@
 # E3S deploy by terraform
 
+## Prerequisites
+
+### AWS Marketplace subscriptions
+
+#### [Zebrunner Selenium Grid Agent](https://aws.amazon.com/marketplace/pp/prodview-qykvcpnstrlzi?sr=0-2&ref_=beagle&applicationId=AWSMPContessa)
+Linux based ECS optimized instance with embedded Zebrunner tuning for scalable and reliable browser images usage
+
+#### [Zebrunner Selenium Grid Agent - Windows](https://aws.amazon.com/marketplace/pp/prodview-wmwdyq54i36jy?sr=0-4&ref_=beagle&applicationId=AWSMPContessa)
+Windows based ECS optimized instance with embedded Zebrunner tuning for scalable and reliable browser images usage
+
+### Software
+
+* Installed git
+* Installed terraform
+* Installed aws cli
+
+### Permissions
+
+Configured aws profile with the following policies:
+
+1. In [terraform-policy.json](policies/terraform-policy.json) should be replaced the next placeholders:
+* `{env}` - Prefix for almost all e3s aws resources
+* `{region}` - Aws region in which all e3s resources will be deployed
+* `{account}` - Aws account id
+* `{bucket_name}` - Name of a bucket that would be used by e3s
+* `{state_bucket_name}` - Bucket to save current state of terraform
+* `{state_bucket_key}` - State file path in bucket
+* `{dynamodb_table}` - Dynamodb table name, which will support terraform's lock mechanism
+* `{dynamodb_region}` - Region of dynamodb table
+
+2. In [terraform-ec2-view-policy.json](policies/terraform-ec2-view-policy.json) should be replaced the next placeholders:
+* `{env}` - Prefix for almost all e3s aws resources
+* `{region}` - Aws region in which all e3s resources will be deployed
+* `{account}` - Aws account id
+
+3. In [terraform-ec2-deploy-policy.json](policies/terraform-ec2-deploy-policy.json) should be replaced the next placeholders:
+* `{env}` - Prefix for almost all e3s aws resources
+* `{region}` - Aws region in which all e3s resources will be deployed
+* `{account}` - Aws account id
+* `{e3s-key-name}` - Key name to attach to e3s-server instance
+
+## Deploy steps
+
 1. Clone repository
 
 ```
