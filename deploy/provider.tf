@@ -16,6 +16,12 @@ terraform {
     }
   }
 
+  backend "s3" {
+    bucket = var.terraform_remote_state.bucket
+    key    = var.terraform_remote_state.key
+    region = var.terraform_remote_state.region
+  }
+
   required_version = "~> 1.8.5"
 }
 

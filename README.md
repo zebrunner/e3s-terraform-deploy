@@ -13,9 +13,13 @@ git clone https://github.com/zebrunner/e3s-terraform-deploy.git && cd ./e3s-terr
 * `environment` - Value type: string. Default value: `None`. Determines prefix in name for all e3s aws resources.
 * `region` - Values type: string. Default value: `None`. Aws region in which all e3s resources will be deployed.
 * `e3s_key_name` - Value type: string. Default value: `None`. Aws key name, that will be attached to e3s-server instance.
-* `bucket` - Value type: object. Default value: `None`. Describes whether to create a new s3 bucket, or use an existing one. Fields :
+* `e3s_bucket` - Value type: object. Default value: `None`. Describes whether to create a new s3 bucket, or use an existing one. Fields:
 * * `exists` - Value type: boolean.
 * * `name` - Value type: string. 
+* * `region`- Value type: string. 
+* `terraform_remote_state` - Value type: object. Default value: `None`. Describes s3 bucket in which to save terraform state. Fields:
+* * `bucket` - Value type: boolean.
+* * `key` - Value type: string. 
 * * `region`- Value type: string. 
 
 > #### Optional vars:

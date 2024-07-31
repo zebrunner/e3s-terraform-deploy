@@ -154,6 +154,20 @@
             ]
         },
         {
+            "Sid": "remoteStateBucket",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::{remote_state_bucket}"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": "arn:aws:s3:::{remote_state_bucket}/{remote_state_key}"
+        },
+        {
             "Sid": "ELBV2",
             "Effect": "Allow",
             "Action": [
