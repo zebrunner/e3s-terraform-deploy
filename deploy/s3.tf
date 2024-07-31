@@ -1,14 +1,14 @@
 resource "aws_s3_bucket" "main" {
-  count         = var.e3s_bucket.exists ? 0 : 1
-  bucket        = var.e3s_bucket.name
+  count         = var.bucket.exists ? 0 : 1
+  bucket        = var.bucket.name
   force_destroy = true
 }
 
 resource "aws_s3_bucket_policy" "vpc_restrict_policy" {
-  count  = var.e3s_bucket.exists ? 0 : 1
+  count  = var.bucket.exists ? 0 : 1
   bucket = aws_s3_bucket.main[0].id
   policy = templatefile("./iam_data/s3-bucket-policy.json", {
-    bucket_name     = var.e3s_bucket.name
+    bucket_name     = var.bucket.name
     vpc_endpoint_id = aws_vpc_endpoint.s3_gw.id
   })
 }
@@ -20,7 +20,7 @@ resource "aws_vpc_endpoint" "s3_gw" {
   service_name      = format("com.amazonaws.%s.s3", var.region)
   vpc_endpoint_type = "Gateway"
   policy = templatefile("./iam_data/s3-endpoint-policy.json", {
-    bucket_name = var.e3s_bucket.name
+    bucket_name = var.bucket.name
     region      = var.region
   })
 }

@@ -15,19 +15,10 @@ variable "e3s_key_name" {
   nullable = false
 }
 
-variable "e3s_bucket" {
+variable "bucket" {
   type = object({
     exists = bool
     name   = string
-    region = string
-  })
-  nullable = false
-}
-
-variable "terraform_remote_state" {
-  type = object({
-    bucket = string
-    key    = string
     region = string
   })
   nullable = false

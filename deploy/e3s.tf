@@ -103,8 +103,8 @@ resource "aws_instance" "e3s_server" {
     linux_capacityprovider   = local.e3s_linux_capacityprovider
     windows_capacityprovider = local.e3s_windows_capacityprovider
     target_group             = local.e3s_tg_name
-    bucket_name              = var.e3s_bucket.name
-    bucket_region            = length(aws_s3_bucket.main) > 0 ? var.region : var.e3s_bucket.region
+    bucket_name              = var.bucket.name
+    bucket_region            = length(aws_s3_bucket.main) > 0 ? var.region : var.bucket.region
     log_group                = length(aws_cloudwatch_log_group.e3s_tasks) > 0 ? local.e3s_log_group_name : ""
 
     zbr_host = var.zebrunner.host
