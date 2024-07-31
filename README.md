@@ -56,13 +56,25 @@ git clone https://github.com/zebrunner/e3s-terraform-deploy.git && cd ./e3s-terr
 * * `user` - Value type: string.
 * * `pass` - Value type: string.
 
-3. Init terraform providers
+3. Create and configure config.{service}.tfbackend file.
+
+Example of s3 backend state configure (config.s3.tfbackend file):
 
 ```
-terraform init
+bucket         = "{state_bucket_name}"
+key            = "{state_bucket_key}"
+region         = "{state_bucket_region}"
+dynamodb_table = "{state_dynamodb_table}"
+encrypt        = true
 ```
 
-4. Deploy
+4. Init terraform providers
+
+```
+terraform init -backend-config=config.{service}.tfbackend
+```
+
+5. Deploy
 
 ```
 terraform apply
