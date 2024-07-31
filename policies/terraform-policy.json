@@ -172,7 +172,8 @@
             "Effect": "Allow",
             "Action": [
                 "dynamodb:PutItem",
-                "dynamodb:GetItem"
+                "dynamodb:GetItem",
+                "dynamodb:DeleteItem"
             ],
             "Resource": "arn:aws:dynamodb:{region}:{account}:table/{state_dynamodb_table}"
         },
