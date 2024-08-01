@@ -1,0 +1,85 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "withoutConstraints",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeAccountAttributes",
+                "ec2:DescribeImages",
+                "autoscaling:DescribePolicies",
+                "autoscaling:GetPredictiveScalingForecast",
+                "autoscaling:DescribeAutoScalingGroups",
+                "cloudwatch:GetMetricData",
+                "cloudwatch:ListMetrics",
+                "cloudwatch:DescribeAlarmsForMetric",
+                "cloudwatch:DescribeAlarms",
+                "logs:FilterLogEvents",
+                "logs:GetLogEvents",
+                "ecs:DescribeClusters",
+                "ecs:ListClusters",
+                "ecs:ListTaskDefinitionFamilies",
+                "ecs:ListServices",
+                "ecs:DescribeTaskDefinition",
+                "elasticloadbalancing:DescribeTargetGroupAttributes",
+                "elasticloadbalancing:DescribeTargetGroups",
+                "elasticloadbalancing:DescribeLoadBalancers",
+                "elasticloadbalancing:DescribeLoadBalancerAttributes",
+                "elasticloadbalancing:DescribeListeners"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "ec2",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeLaunchTemplates",
+                "ec2:DescribeLaunchTemplateVersions",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeVolumes",
+                "ec2:DescribeSecurityGroupRules",
+                "ec2:DescribeInstanceAttribute",
+                "ec2:DescribeInstances",
+                "ec2:DescribeInstanceStatus",
+                "ec2:DescribeVpcAttribute",
+                "ec2:DescribeNatGateways",
+                "ec2:DescribeNetworkAcls",
+                "ec2:DescribeRouteTables",
+                "ec2:DescribeDhcpOptions",
+                "ec2:DescribeAvailabilityZones",
+                "ec2:DescribeInternetGateways",
+                "ec2:DescribeEgressOnlyInternetGateways",
+                "ec2:DescribeEgressOnlyInternetGateways",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeVpcEndpoints",
+                "ec2:DescribeVpcEndpointServices",
+                "ec2:DescribeVpcEndpointServiceConfigurations"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Condition": {
+                "StringLike": {
+                    "ec2:Region": "{Region}"
+                }
+            }
+        },
+        {
+            "Sid": "ecs",
+            "Effect": "Allow",
+            "Action": [
+                "ecs:ListTasks",
+                "ecs:DescribeContainerInstances",
+                "ecs:DescribeTasks",
+                "ecs:ListContainerInstances",
+                "ecs:DescribeCapacityProviders"
+            ],
+            "Resource": [
+                "arn:aws:ecs:*:{Account}:container-instance/e3s-*",
+                "arn:aws:ecs:*:{Account}:task/e3s-*",
+                "arn:aws:ecs:*:{Account}:cluster/e3s-*",
+                "arn:aws:ecs:*:{Account}:capacity-provider/e3s-*"
+            ]
+        }
+    ]
+}
