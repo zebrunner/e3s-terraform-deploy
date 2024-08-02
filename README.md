@@ -126,3 +126,7 @@ terraform init -backend-config=config.{service}.tfbackend
 ```
 terraform apply
 ```
+
+6. [Optional] User policices.
+
+For user's use could be created [e3s-manage](policices/e3s-manage-policy.json) and [e3s-monitor](policices/e3s-monitor-policy.json) policies.
