@@ -52,7 +52,7 @@ fi
 cd "$e3s_path"
 case ${remote_data} in 
   (true) 
-    git checkout "terraform-remote"
+    git checkout "main"
 
     # data.env
     replace "POSTGRES_PASSWORD" ${db_pass} "./properties/data.env"
@@ -61,7 +61,7 @@ case ${remote_data} in
     replace "CACHE_REMOTE" "true" "./properties/data.env"
   ;;
   (false)
-    git checkout "terraform-local"
+    git checkout "main-local"
   ;;
   (*) 
     echo "remote_data is not a bool value"
