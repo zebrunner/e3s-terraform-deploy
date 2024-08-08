@@ -160,7 +160,7 @@
             "Resource": "arn:aws:s3:::{state_bucket_name}"
         },
         {
-            "Effect": "RemoteStateBucketSave",
+            "Effect": "Allow",
             "Action": [
                 "s3:GetObject",
                 "s3:PutObject"
