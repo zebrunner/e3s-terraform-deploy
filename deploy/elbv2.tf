@@ -28,7 +28,7 @@ resource "aws_lb" "main" {
   load_balancer_type = "application"
   ip_address_type    = "ipv4"
   internal           = false
-  idle_timeout       = 660
+  idle_timeout       = 630
 }
 
 resource "aws_lb_listener" "main" {

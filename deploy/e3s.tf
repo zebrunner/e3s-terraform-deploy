@@ -88,7 +88,7 @@ resource "aws_instance" "e3s_server" {
   }
 
   ebs_block_device {
-    device_name = "/dev/sda1"
+    device_name           = "/dev/sda1"
     delete_on_termination = true
     encrypted             = true
     volume_type           = "gp3"

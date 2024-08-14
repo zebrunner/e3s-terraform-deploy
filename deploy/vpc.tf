@@ -51,27 +51,39 @@ resource "aws_subnet" "private_per_zone" {
 }
 
 resource "aws_route_table" "internet-private" {
-  vpc_id = aws_vpc.main.id
+  count = length(aws_nat_gateway.nat-gws)
+  vpc_id   = aws_vpc.main.id
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat-gw.id
+    nat_gateway_id = aws_nat_gateway.nat-gws[count.index].id
   }
 }
 
+locals {
+  internet_private_ids = [for route-table in aws_route_table.internet-private : route-table.id]
+  public_subnets_ids   = [for subnet in aws_subnet.public_per_zone : subnet.id]
+}
+
+
 resource "aws_route_table_association" "nat-associations" {
-  for_each       = (tomap(aws_subnet.private_per_zone))
-  route_table_id = aws_route_table.internet-private.id
-  subnet_id      = aws_subnet.private_per_zone[each.key].id
+  count          = length(aws_subnet.private_per_zone)
+  route_table_id = local.internet_private_ids[count.index]
+  subnet_id      = aws_subnet.private_per_zone[count.index].id
+
+  depends_on = [aws_route_table.internet-private]
 }
 
 resource "aws_eip" "nat" {
+  count                = length(local.public_subnets_ids)
   domain               = "vpc"
   network_border_group = var.region
 }
 
-resource "aws_nat_gateway" "nat-gw" {
-  allocation_id = aws_eip.nat.id
-  subnet_id     = random_shuffle.public_subnet.result[0]
+resource "aws_nat_gateway" "nat-gws" {
+  count = length(local.public_subnets_ids)
+
+  allocation_id = aws_eip.nat[count.index].id
+  subnet_id     = local.public_subnets_ids[count.index]
 
   depends_on = [aws_internet_gateway.igw]
 }

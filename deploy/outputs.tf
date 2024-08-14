@@ -3,10 +3,10 @@ output "e3s_ip" {
   value       = aws_instance.e3s_server.public_ip
 }
 
-output "nat_gw_ip" {
-  description = "adress of nat gateway"
-  value       = aws_nat_gateway.nat-gw.public_ip
-}
+# output "nat_gw_ip" {
+#   description = "adress of nat gateway"
+#   value       = aws_nat_gateway.nat-gws
+# }
 
 output "lb_dns" {
   description = "load balancer dns"
