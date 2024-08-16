@@ -16,7 +16,7 @@ resource "aws_s3_bucket_policy" "vpc_restrict_policy" {
 resource "aws_vpc_endpoint" "s3_gw" {
   vpc_id = aws_vpc.main.id
 
-  route_table_ids   = [for route-table in aws_route_table.internet-private : route-table.id]
+  route_table_ids   = [for route-table in aws_route_table.internet_private : route-table.id]
   service_name      = format("com.amazonaws.%s.s3", var.region)
   vpc_endpoint_type = "Gateway"
   policy = templatefile("./iam_data/s3-endpoint-policy.json", {
