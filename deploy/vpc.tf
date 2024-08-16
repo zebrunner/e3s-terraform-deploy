@@ -22,8 +22,9 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  az_subnets = { for id, az_name in data.aws_availability_zones.available.names : az_name => { "public_cidr" : cidrsubnet(aws_vpc.main.cidr_block, 8, id), "private_cidr" : cidrsubnet(aws_vpc.main.cidr_block, 8, length(data.aws_availability_zones.available.names) + id) } }
-  az_eips = zipmap(data.aws_availability_zones.available.names, aws_eip.static_ip)
+  azs = slice(sort(data.aws_availability_zones.available.names), 0, length(data.aws_availability_zones.available.names) > var.max_az_number ? var.max_az_number : length(data.aws_availability_zones.available.names))
+  az_subnets = { for id, az_name in local.azs : az_name => { "public_cidr" : cidrsubnet(aws_vpc.main.cidr_block, 8, id), "private_cidr" : cidrsubnet(aws_vpc.main.cidr_block, 8, length(local.azs) + id) } }
+  az_eips = zipmap(local.azs, aws_eip.static_ip)
 }
 
 resource "aws_subnet" "public_per_zone" {

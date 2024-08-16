@@ -50,6 +50,11 @@ variable "data_layer_remote" {
   default = true
 }
 
+variable "max_az_number" {
+  type = number
+  default = 3
+}
+
 variable "profile" {
   type    = string
   default = ""
