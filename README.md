@@ -68,6 +68,7 @@ git clone https://github.com/zebrunner/e3s-terraform-deploy.git && cd ./e3s-terr
 * `allow_agent_ssh` - Value type: boolean. Default value: `false`. Allows ssh connection to agent instances by newly created key name only from e3s-server instance.
 * `enable_cloudwatch` - Value type: boolean. Default value: `false`. Enables tasks logs display at aws ecs console.
 * `data_layer_remote` - Value type: boolean. Default value: `true`. Determines whether to create rds and elasticache services in aws cloud or use local ones instead.
+* `nat` - Value type: boolean. Default value: `false`. Determines whether to create private subnets and provide internet connection by nat gateways.
 * `max_az_number` - Value type: number. Default value: `3`. Determines number of availability zones to use in current region
 * `profile` - Value type: string. Default value: `None`. Aws profile to use in terraform provider.
 * `remote_db` - Value type: object. Default value: 

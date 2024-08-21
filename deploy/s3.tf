@@ -5,15 +5,17 @@ resource "aws_s3_bucket" "main" {
 }
 
 resource "aws_s3_bucket_policy" "vpc_restrict_policy" {
-  count  = var.bucket.exists ? 0 : 1
+  count  = var.bucket.exists && length(aws_vpc_endpoint.s3_gw) == 0 ? 0 : 1
   bucket = aws_s3_bucket.main[0].id
   policy = templatefile("./iam_data/s3-bucket-policy.json", {
     bucket_name     = var.bucket.name
-    vpc_endpoint_id = aws_vpc_endpoint.s3_gw.id
+    vpc_endpoint_id = aws_vpc_endpoint.s3_gw[0].id
   })
 }
 
 resource "aws_vpc_endpoint" "s3_gw" {
+  count = var.nat ? 1 : 0
+
   vpc_id = aws_vpc.main.id
 
   route_table_ids   = [for route-table in aws_route_table.internet_private : route-table.id]

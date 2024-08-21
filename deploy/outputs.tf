@@ -5,7 +5,7 @@ output "e3s_ip" {
 
 output "nat_gw_ips" {
   description = "adresses of nat gateways"
-  value       = [ for nat in aws_nat_gateway.nat-gws: nat.public_ip ]
+  value       = var.nat ? [for nat in aws_nat_gateway.nat-gws : nat.public_ip] : ["nat gws are not created"]
 }
 
 output "lb_dns" {
@@ -40,5 +40,5 @@ output "cloudwatch_vpc_endpoint_id" {
 
 output "s3_vpc_gw_endpoint_id" {
   description = "vpc gateway endpoint for s3 artifacts upload"
-  value       = aws_vpc_endpoint.s3_gw.id
+  value       = length(aws_vpc_endpoint.s3_gw) != 0 ? aws_vpc_endpoint.s3_gw[0].id : "s3 gateway is not created"
 }
