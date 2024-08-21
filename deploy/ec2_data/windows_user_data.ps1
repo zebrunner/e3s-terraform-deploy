@@ -9,7 +9,7 @@
     [Environment]::SetEnvironmentVariable("ECS_ENABLE_CONTAINER_METADATA", "$TRUE", "Machine")
     [Environment]::SetEnvironmentVariable("ECS_IMAGE_PULL_BEHAVIOR", "prefer-cached", "Machine")
     
-    Initialize-ECSAgent -Cluster '${cluster_name}' -EnableTaskIAMRole -AwsvpcBlockIMDS -LoggingDrivers '["json-file","awslogs"]'
+    Initialize-ECSAgent -Cluster '${cluster_name}' -EnableTaskIAMRole -AwsvpcBlockIMDS -LoggingDrivers '["json-file","awslogs"]' -EnableTaskENI -AwsvpcAdditionalLocalRoutes '["${cidr_block}"]'
 
     Set-TimeZone -Name "Pacific Standard Time"
 </powershell>

@@ -3,9 +3,9 @@ output "e3s_ip" {
   value       = aws_instance.e3s_server.public_ip
 }
 
-output "nat_gw_ip" {
-  description = "adress of nat gateway"
-  value       = aws_nat_gateway.nat-gw.public_ip
+output "nat_gw_ips" {
+  description = "adresses of nat gateways"
+  value       = [ for nat in aws_nat_gateway.nat-gws: nat.public_ip ]
 }
 
 output "lb_dns" {
