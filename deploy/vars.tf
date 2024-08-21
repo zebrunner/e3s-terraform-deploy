@@ -50,6 +50,11 @@ variable "data_layer_remote" {
   default = true
 }
 
+variable "nat"{
+  type = bool
+  default = false
+}
+
 variable "max_az_number" {
   type = number
   default = 3

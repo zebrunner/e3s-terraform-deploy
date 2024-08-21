@@ -37,7 +37,7 @@ resource "aws_subnet" "public_per_zone" {
 }
 
 resource "aws_subnet" "private_per_zone" {
-  for_each = local.az_subnets
+  for_each = var.nat ? local.az_subnets : tomap({})
 
   vpc_id                  = aws_vpc.main.id
   map_public_ip_on_launch = false
@@ -52,16 +52,15 @@ resource "aws_route_table_association" "public-subnets-internet-associations" {
 }
 
 resource "aws_eip" "static_ip" {
-  count                = length(local.az_subnets)
+  count                = var.nat ? length(local.az_subnets) : 0
   domain               = "vpc"
   network_border_group = var.region
 }
 
 resource "aws_nat_gateway" "nat-gws" {
-  for_each      = aws_subnet.public_per_zone
+  for_each      = var.nat ? aws_subnet.public_per_zone: tomap({})
   subnet_id     = aws_subnet.public_per_zone[each.key].id
   allocation_id = local.az_eips[each.key].id
-  #  aws_eip.static_ip[each.key].id
   depends_on = [aws_internet_gateway.igw, aws_eip.static_ip]
 }
 
