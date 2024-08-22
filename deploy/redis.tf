@@ -17,10 +17,10 @@ data "aws_subnets" "redis" {
 
   filter {
     name   = "subnet-id"
-    values = [for subnet in aws_subnet.private_per_zone : subnet.id]
+    values = length(aws_subnet.private_per_zone) != 0 ? [for s in aws_subnet.private_per_zone : s.id] : [for s in aws_subnet.public_per_zone : s.id]
   }
 
-  depends_on = [aws_subnet.private_per_zone]
+  depends_on = [aws_subnet.private_per_zone, aws_subnet.public_per_zone]
 }
 
 resource "aws_elasticache_serverless_cache" "redis" {

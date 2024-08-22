@@ -22,9 +22,9 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  azs = slice(sort(data.aws_availability_zones.available.names), 0, length(data.aws_availability_zones.available.names) > var.max_az_number ? var.max_az_number : length(data.aws_availability_zones.available.names))
+  azs        = slice(sort(data.aws_availability_zones.available.names), 0, length(data.aws_availability_zones.available.names) > var.max_az_number ? var.max_az_number : length(data.aws_availability_zones.available.names))
   az_subnets = { for id, az_name in local.azs : az_name => { "public_cidr" : cidrsubnet(aws_vpc.main.cidr_block, 8, id), "private_cidr" : cidrsubnet(aws_vpc.main.cidr_block, 8, length(local.azs) + id) } }
-  az_eips = zipmap(local.azs, aws_eip.static_ip)
+  az_eips    = var.nat ? zipmap(local.azs, aws_eip.static_ip) : {}
 }
 
 resource "aws_subnet" "public_per_zone" {
@@ -37,7 +37,7 @@ resource "aws_subnet" "public_per_zone" {
 }
 
 resource "aws_subnet" "private_per_zone" {
-  for_each = local.az_subnets
+  for_each = var.nat ? local.az_subnets : tomap({})
 
   vpc_id                  = aws_vpc.main.id
   map_public_ip_on_launch = false
@@ -52,22 +52,21 @@ resource "aws_route_table_association" "public-subnets-internet-associations" {
 }
 
 resource "aws_eip" "static_ip" {
-  count                = length(local.az_subnets)
+  count                = var.nat ? length(local.az_subnets) : 0
   domain               = "vpc"
   network_border_group = var.region
 }
 
 resource "aws_nat_gateway" "nat-gws" {
-  for_each      = aws_subnet.public_per_zone
+  for_each      = var.nat ? aws_subnet.public_per_zone : tomap({})
   subnet_id     = aws_subnet.public_per_zone[each.key].id
   allocation_id = local.az_eips[each.key].id
-  #  aws_eip.static_ip[each.key].id
-  depends_on = [aws_internet_gateway.igw, aws_eip.static_ip]
+  depends_on    = [aws_internet_gateway.igw, aws_eip.static_ip]
 }
 
 resource "aws_route_table" "internet_private" {
   for_each = aws_nat_gateway.nat-gws
-  vpc_id = aws_vpc.main.id
+  vpc_id   = aws_vpc.main.id
   route {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat-gws[each.key].id
@@ -75,7 +74,7 @@ resource "aws_route_table" "internet_private" {
 }
 
 resource "aws_route_table_association" "nat-associations" {
-  for_each = aws_subnet.private_per_zone
+  for_each       = aws_subnet.private_per_zone
   route_table_id = aws_route_table.internet_private[each.key].id
   subnet_id      = aws_subnet.private_per_zone[each.key].id
 }
