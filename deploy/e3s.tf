@@ -1,19 +1,5 @@
 locals {
-  zone_subnet_map = { for subnet in aws_subnet.public_per_zone : subnet.availability_zone => subnet.id }
-}
-
-resource "random_shuffle" "e3s_subnet_location" {
-  input        = sort([for location in data.aws_ec2_instance_type_offerings.supported_server_zones.locations : location])
-  result_count = 1
-}
-
-data "aws_ec2_instance_type_offerings" "supported_server_zones" {
-  filter {
-    name   = "instance-type"
-    values = [var.e3s_server_instance_type]
-  }
-
-  location_type = "availability-zone"
+  subnets_arr = [ for subnet in aws_subnet.public_per_zone :  subnet.id ]
 }
 
 resource "tls_private_key" "pri_key" {
@@ -64,7 +50,7 @@ resource "aws_instance" "e3s_server" {
   ami           = data.aws_ami.ubuntu_22_04.id
   instance_type = var.e3s_server_instance_type
 
-  subnet_id = local.zone_subnet_map[random_shuffle.e3s_subnet_location.result[0]]
+  subnet_id = local.subnets_arr[0]
 
   key_name = var.e3s_key_name
 
@@ -125,7 +111,7 @@ resource "aws_instance" "e3s_server" {
   })
 
   # depends_on = [aws_ecs_cluster.e3s, aws_lb_listener.main, aws_rds_cluster_instance.aurora_instance]
-  depends_on = [aws_ecs_cluster.e3s, aws_lb_listener.main]
+  depends_on = [aws_ecs_cluster.e3s, aws_lb_listener.main, aws_subnet.public_per_zone]
 
   lifecycle {
     ignore_changes = [user_data]
