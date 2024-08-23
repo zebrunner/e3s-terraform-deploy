@@ -1,0 +1,29 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "autoscaling",
+            "Effect": "Allow",
+            "Action": [
+                "autoscaling:UpdateAutoScalingGroup",
+                "autoscaling:SetInstanceProtection"
+            ],
+            "Resource": "arn:aws:autoscaling:*:{Account}:autoScalingGroup:*:autoScalingGroupName/e3s-*"
+        },
+        {
+            "Sid": "TerminateE3SAsgInstances",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:TerminateInstances"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Condition": {
+                "StringLike": {
+                    "ec2:ResourceTag/aws:autoscaling:groupName": "e3s-*"
+                }
+            }
+        }
+    ]
+}
