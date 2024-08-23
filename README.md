@@ -7,7 +7,49 @@ Feel free to support the development with a [**donation**](https://www.paypal.co
 </p>
 
 
-## Usage
+## Prerequisites
+
+### AWS Marketplace subscriptions
+
+#### [Zebrunner Selenium Grid Agent](https://aws.amazon.com/marketplace/pp/prodview-qykvcpnstrlzi?sr=0-2&ref_=beagle&applicationId=AWSMPContessa)
+Linux based ECS optimized instance with embedded Zebrunner tuning for scalable and reliable browser images usage
+
+#### [Zebrunner Selenium Grid Agent - Windows](https://aws.amazon.com/marketplace/pp/prodview-wmwdyq54i36jy?sr=0-4&ref_=beagle&applicationId=AWSMPContessa)
+Windows based ECS optimized instance with embedded Zebrunner tuning for scalable and reliable browser images usage
+
+### Software
+
+* Installed git
+* Installed terraform
+* Installed aws cli
+
+### Permissions
+
+Configured aws profile with the following policies:
+
+1. In [terraform-policy.json](policies/terraform-policy.json) should be replaced the next placeholders:
+* `{env}` - Prefix for almost all e3s aws resources
+* `{region}` - Aws region in which all e3s resources will be deployed
+* `{account}` - Aws account id
+* `{bucket_name}` - Name of a bucket that would be used by e3s
+* `{state_bucket_name}` - Bucket to save current state of terraform
+* `{state_bucket_key}` - State file path in bucket
+* `{dynamodb_table}` - Dynamodb table name, which will support terraform's lock mechanism
+* `{dynamodb_region}` - Region of dynamodb table
+
+2. In [terraform-ec2-view-policy.json](policies/terraform-ec2-view-policy.json) should be replaced the next placeholders:
+* `{env}` - Prefix for almost all e3s aws resources
+* `{region}` - Aws region in which all e3s resources will be deployed
+* `{account}` - Aws account id
+
+3. In [terraform-ec2-deploy-policy.json](policies/terraform-ec2-deploy-policy.json) should be replaced the next placeholders:
+* `{env}` - Prefix for almost all e3s aws resources
+* `{region}` - Aws region in which all e3s resources will be deployed
+* `{account}` - Aws account id
+* `{e3s-key-name}` - Key name to attach to e3s-server instance
+
+## Deploy steps
+
 1. Clone repository and get to deploy folder
 
 ```
@@ -33,6 +75,9 @@ git clone https://github.com/zebrunner/e3s-terraform-deploy.git && cd ./e3s-terr
 * `allow_agent_ssh` - Value type: boolean. Default value: `false`. Allows ssh connection to agent instances by newly created key name only from e3s-server instance.
 * `enable_cloudwatch` - Value type: boolean. Default value: `false`. Enables tasks logs display at aws ecs console.
 * `data_layer_remote` - Value type: boolean. Default value: `true`. Determines whether to create rds and elasticache services in aws cloud or use local ones instead.
+* `nat` - Value type: boolean. Default value: `false`. Determines whether to create private subnets and provide internet connection by nat gateways.
+* `max_az_number` - Value type: number. Default value: `3`. Determines number of availability zones to use in current region
+* `profile` - Value type: string. Default value: `None`. Aws profile to use in terraform provider.
 * `remote_db` - Value type: object. Default value: 
 ```
 {
@@ -67,14 +112,30 @@ Determines autoscaling group instance types and corresponding weights. Fields:
 * * `user` - Value type: string.
 * * `pass` - Value type: string.
 
-3. Init terraform providers
+3. Create and configure config.{service}.tfbackend file.
+
+Example of s3 backend state configure (config.s3.tfbackend file):
 
 ```
-terraform init
+bucket         = "{state_bucket_name}"
+key            = "{state_bucket_key}"
+region         = "{state_bucket_region}"
+dynamodb_table = "{state_dynamodb_table}"
+encrypt        = true
 ```
 
-4. Deploy
+4. Init terraform providers
+
+```
+terraform init -backend-config=config.{service}.tfbackend
+```
+
+5. Deploy
 
 ```
 terraform apply
 ```
+
+6. [Optional] User policices.
+
+For user's use could be created [e3s-manage](policices/e3s-manage-policy.json) and [e3s-monitor](policices/e3s-monitor-policy.json) policies.
