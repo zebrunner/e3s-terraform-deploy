@@ -114,6 +114,6 @@ resource "aws_instance" "e3s_server" {
   depends_on = [aws_ecs_cluster.e3s, aws_lb_listener.main, aws_subnet.public_per_zone]
 
   lifecycle {
-    ignore_changes = [user_data]
+    ignore_changes = [user_data, ami]
   }
 }
