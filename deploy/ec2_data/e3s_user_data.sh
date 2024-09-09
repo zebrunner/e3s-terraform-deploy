@@ -70,10 +70,10 @@ esac
 
 case ${nat} in 
   (true) 
-    replace "SERVICE_STARTUP_TIMEOUT" "10m" "./properties/router.env"
+    replace "SERVICE_STARTUP_TIMEOUT" "5m45s" "./properties/router.env"
   ;;
   (false)
-    replace "SERVICE_STARTUP_TIMEOUT" "5m45s" "./properties/router.env"
+    replace "SERVICE_STARTUP_TIMEOUT" "10m" "./properties/router.env"
   ;;
   (*) 
     echo "nat is not a bool value"
