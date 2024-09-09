@@ -3,7 +3,7 @@ resource "aws_db_subnet_group" "rds" {
   name        = local.e3s_rds_subnet_name
   description = "RDS subnet group"
   subnet_ids  = length(aws_subnet.private_per_zone) != 0 ? [for s in aws_subnet.private_per_zone : s.id] : [for s in aws_subnet.public_per_zone : s.id]
-  depends_on = [aws_subnet.private_per_zone, aws_subnet.public_per_zone]
+  depends_on  = [aws_subnet.private_per_zone, aws_subnet.public_per_zone]
 }
 
 resource "aws_db_instance" "postgres" {

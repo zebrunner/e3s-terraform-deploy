@@ -180,7 +180,7 @@ resource "aws_security_group" "cloudwatch" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "cloudwatch" {
-  count             = length(aws_security_group.cloudwatch) != 0 ? 1 : 0
+  count                        = length(aws_security_group.cloudwatch) != 0 ? 1 : 0
   security_group_id            = aws_security_group.cloudwatch[0].id
   ip_protocol                  = "-1"
   referenced_security_group_id = aws_security_group.e3s_agent.id
