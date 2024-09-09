@@ -1,5 +1,5 @@
 locals {
-  subnets_arr = [ for subnet in aws_subnet.public_per_zone :  subnet.id ]
+  subnets_arr = [for subnet in aws_subnet.public_per_zone : subnet.id]
 }
 
 resource "tls_private_key" "pri_key" {
@@ -92,6 +92,8 @@ resource "aws_instance" "e3s_server" {
     bucket_name              = var.bucket.name
     bucket_region            = length(aws_s3_bucket.main) > 0 ? var.region : var.bucket.region
     log_group                = length(aws_cloudwatch_log_group.e3s_tasks) > 0 ? local.e3s_log_group_name : ""
+
+    nat = var.nat
 
     zbr_host = var.zebrunner.host
     zbr_user = var.zebrunner.user
