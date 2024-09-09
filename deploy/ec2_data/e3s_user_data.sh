@@ -68,6 +68,18 @@ case ${remote_data} in
   ;;
 esac
 
+case ${nat} in 
+  (true) 
+    replace "SERVICE_STARTUP_TIMEOUT" "10m" "./properties/router.env"
+  ;;
+  (false)
+    replace "SERVICE_STARTUP_TIMEOUT" "5m45s" "./properties/router.env"
+  ;;
+  (*) 
+    echo "nat is not a bool value"
+  ;;
+esac
+
 # config.env
 replace "AWS_REGION" ${region} "./properties/config.env"
 replace "AWS_CLUSTER" ${cluster_name} "./properties/config.env"

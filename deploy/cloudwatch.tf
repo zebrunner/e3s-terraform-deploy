@@ -1,5 +1,5 @@
 resource "aws_vpc_endpoint" "cloudwatch" {
-  count  = var.enable_cloudwatch && var.nat ? 1 : 0
+  count = var.enable_cloudwatch && var.nat ? 1 : 0
 
   vpc_id     = aws_vpc.main.id
   subnet_ids = [for s in aws_subnet.private_per_zone : s.id]

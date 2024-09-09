@@ -5,7 +5,7 @@ resource "aws_s3_bucket" "main" {
 }
 
 resource "aws_s3_bucket_policy" "vpc_restrict_policy" {
-  count  = var.bucket.exists || length(aws_vpc_endpoint.s3_gw) == 0  ? 0 : 1
+  count  = var.bucket.exists || length(aws_vpc_endpoint.s3_gw) == 0 ? 0 : 1
   bucket = var.bucket.name
   policy = templatefile("./iam_data/s3-bucket-policy.json", {
     bucket_name     = var.bucket.name
