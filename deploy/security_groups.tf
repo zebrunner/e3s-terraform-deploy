@@ -20,6 +20,33 @@ resource "aws_vpc_security_group_ingress_rule" "e3s_server_router_ports" {
   description       = "router_ports"
 }
 
+resource "aws_vpc_security_group_ingress_rule" "e3s_server_prometheus_port" {
+  security_group_id = aws_security_group.e3s_server.id
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 9090
+  to_port           = 9090
+  description       = "prometheus"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "e3s_server_alertmanager_port" {
+  security_group_id = aws_security_group.e3s_server.id
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 9093
+  to_port           = 9093
+  description       = "alertmanager"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "e3s_server_grafana_port" {
+  security_group_id = aws_security_group.e3s_server.id
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 3000
+  to_port           = 3000
+  description       = "grafana"
+}
+
 resource "aws_vpc_security_group_ingress_rule" "e3s_server_ssh_ipv4" {
   security_group_id = aws_security_group.e3s_server.id
   ip_protocol       = "tcp"
@@ -72,6 +99,26 @@ resource "aws_vpc_security_group_ingress_rule" "e3s_agent_ssh_ipv4" {
   from_port         = 22
   to_port           = 22
   description       = "ssh"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "e3s_agent_node_exporter" {
+  count             = var.asg_metrics ? 1 : 0
+  security_group_id = aws_security_group.e3s_agent.id
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "${aws_instance.e3s_server.private_ip}/32"
+  from_port         = 9100
+  to_port           = 9100
+  description       = "node-exporter"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "e3s_agent_cadvisor_exporter" {
+  count             = var.asg_metrics ? 1 : 0
+  security_group_id = aws_security_group.e3s_agent.id
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "${aws_instance.e3s_server.private_ip}/32"
+  from_port         = 8080
+  to_port           = 8080
+  description       = "cadvisor-exporter"
 }
 
 resource "aws_vpc_security_group_egress_rule" "e3s_agent_outbound_trafic_ipv4" {

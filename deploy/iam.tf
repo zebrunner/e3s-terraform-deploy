@@ -75,3 +75,10 @@ resource "aws_iam_instance_profile" "e3s_agent" {
   name = local.e3s_agent_role_name
   role = aws_iam_role.e3s_agent.name
 }
+
+resource "aws_iam_role" "e3s_exporter" {
+  count = var.asg_metrics ? 1 : 0
+  name  = local.e3s_exporter_role_name
+  # managed_policy_arns = [aws_iam_policy.e3s_task.arn]
+  assume_role_policy = data.aws_iam_policy_document.ecs_assume_role_policy.json
+}
