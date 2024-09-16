@@ -162,3 +162,86 @@ resource "aws_ecs_service" "linux_exporter" {
   launch_type         = "EC2"
   scheduling_strategy = "DAEMON"
 }
+
+resource "aws_ecs_task_definition" "windows_exporter" {
+  count                    = var.asg_instance_metrics ? 1 : 0
+  family                   = "exporters"
+  requires_compatibilities = ["EC2"]
+  task_role_arn            = aws_iam_role.e3s_exporter[0].arn
+
+  volume {
+    name      = "var_run"
+    host_path = "/var/run"
+  }
+
+  volume {
+    name      = "var_lib_docker"
+    host_path = "/var/lib/docker"
+  }
+
+  volume {
+    name      = "dev_disk"
+    host_path = "/dev/disk"
+  }
+
+  container_definitions = jsonencode([
+    {
+      name              = "node-exporter"
+      image             = "public.ecr.aws/zebrunner/node-exporter:v1.8.2"
+      essential         = true
+      cpu               = 128
+      memory            = 256
+      memoryReservation = 256
+      portMappings = [
+        {
+          containerPort = 9100
+          hostPort      = 9100
+          protocol      = "tcp"
+        }
+      ]
+    },
+    {
+      name              = "cadvisor-exporter"
+      image             = "gcr.io/cadvisor/cadvisor"
+      essential         = true
+      cpu               = 128
+      memory            = 256
+      memoryReservation = 256
+      portMappings = [
+        {
+          containerPort = 8080
+          hostPort      = 8080
+          protocol      = "tcp"
+        }
+      ],
+      mountPoints = [
+        {
+          sourceVolume  = "var_run"
+          containerPath = "/var/run"
+          readOnly      = true
+        },
+        {
+          sourceVolume  = "var_lib_docker"
+          containerPath = "/var/lib/docker"
+          readOnly      = true
+        },
+        {
+          sourceVolume  = "dev_disk"
+          containerPath = "/dev/disk"
+          readOnly      = true
+        }
+      ],
+      privileged             = true,
+      readonlyRootFilesystem = false
+    }
+  ])
+}
+
+resource "aws_ecs_service" "windows_exporter" {
+  count               = length(aws_ecs_task_definition.windows_exporter) > 0 ? 1 : 0
+  name                = "windows-exporter"
+  cluster             = aws_ecs_cluster.e3s.name
+  task_definition     = aws_ecs_task_definition.windows_exporter[0].arn
+  launch_type         = "EC2"
+  scheduling_strategy = "DAEMON"
+}

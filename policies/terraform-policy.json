@@ -41,7 +41,8 @@
                 "arn:aws:ecs:{region}:{account}:cluster/e3s-{env}",
                 "arn:aws:ecs:{region}:{account}:capacity-provider/e3s-{env}-linux-capacityprovider",
                 "arn:aws:ecs:{region}:{account}:capacity-provider/e3s-{env}-windows-capacityprovider",
-                "arn:aws:ecs:{region}:{account}:service/e3s-{env}/linux-exporter"
+                "arn:aws:ecs:{region}:{account}:service/e3s-{env}/linux-exporter",
+                "arn:aws:ecs:{region}:{account}:service/e3s-{env}/windows-exporter"
             ]
         },
         {
