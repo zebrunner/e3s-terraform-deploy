@@ -56,7 +56,7 @@ EOF
 }
 
 resource "aws_ecs_task_definition" "linux_exporter" {
-  count                    = var.asg_metrics ? 1 : 0
+  count                    = var.asg_instance_metrics ? 1 : 0
   family                   = "exporters"
   requires_compatibilities = ["EC2"]
   task_role_arn            = aws_iam_role.e3s_exporter[0].arn

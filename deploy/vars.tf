@@ -50,7 +50,7 @@ variable "data_layer_remote" {
   default = true
 }
 
-variable "asg_metrics" {
+variable "asg_instance_metrics" {
   type    = bool
   default = false
 }
