@@ -161,6 +161,10 @@ resource "aws_ecs_service" "linux_exporter" {
   task_definition     = aws_ecs_task_definition.linux_exporter[0].arn
   launch_type         = "EC2"
   scheduling_strategy = "DAEMON"
+  placement_constraints {
+    type = "memberOf"
+    expression = "attribute:ecs.os-type == linux"
+  }
 }
 
 resource "aws_ecs_task_definition" "windows_exporter" {
@@ -244,4 +248,9 @@ resource "aws_ecs_service" "windows_exporter" {
   task_definition     = aws_ecs_task_definition.windows_exporter[0].arn
   launch_type         = "EC2"
   scheduling_strategy = "DAEMON"
+
+  placement_constraints {
+    type = "memberOf"
+    expression = "attribute:ecs.os-type == windows"
+  }
 }
