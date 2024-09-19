@@ -112,7 +112,7 @@ resource "aws_ecs_task_definition" "linux_exporter" {
       portMappings = [
         {
           containerPort = 8080
-          hostPort      = 8080
+          hostPort      = 9101
           protocol      = "tcp"
         }
       ],
