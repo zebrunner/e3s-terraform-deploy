@@ -88,6 +88,21 @@ resource "aws_ecs_task_definition" "linux_exporter" {
 
   container_definitions = jsonencode([
     {
+      name              = "node-exporter"
+      image             = "public.ecr.aws/zebrunner/node-exporter:v1.8.2"
+      essential         = true
+      cpu               = 128
+      memory            = 256
+      memoryReservation = 256
+      portMappings = [
+        {
+          containerPort = 9100
+          hostPort      = 9100
+          protocol      = "tcp"
+        }
+      ]
+    },
+    {
       name              = "cadvisor-exporter"
       image             = "gcr.io/cadvisor/cadvisor"
       essential         = true
