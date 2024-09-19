@@ -155,6 +155,7 @@ resource "aws_vpc_security_group_ingress_rule" "windows_exporter" {
   ip_protocol       = "tcp"
   cidr_ipv4         = "${aws_instance.e3s_server.private_ip}/32"
   from_port         = 9182
+  to_port           = 9182
   description       = "windows-exporter"
 }
 
