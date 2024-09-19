@@ -101,26 +101,6 @@ resource "aws_vpc_security_group_ingress_rule" "e3s_agent_ssh_ipv4" {
   description       = "ssh"
 }
 
-resource "aws_vpc_security_group_ingress_rule" "e3s_agent_node_exporter" {
-  count             = var.asg_instance_metrics ? 1 : 0
-  security_group_id = aws_security_group.e3s_agent.id
-  ip_protocol       = "tcp"
-  cidr_ipv4         = "${aws_instance.e3s_server.private_ip}/32"
-  from_port         = 9100
-  to_port           = 9100
-  description       = "node-exporter"
-}
-
-resource "aws_vpc_security_group_ingress_rule" "e3s_agent_cadvisor_exporter" {
-  count             = var.asg_instance_metrics ? 1 : 0
-  security_group_id = aws_security_group.e3s_agent.id
-  ip_protocol       = "tcp"
-  cidr_ipv4         = "${aws_instance.e3s_server.private_ip}/32"
-  from_port         = 8080
-  to_port           = 8080
-  description       = "cadvisor-exporter"
-}
-
 resource "aws_vpc_security_group_egress_rule" "e3s_agent_outbound_trafic_ipv4" {
   security_group_id = aws_security_group.e3s_agent.id
   ip_protocol       = "-1"
@@ -129,6 +109,65 @@ resource "aws_vpc_security_group_egress_rule" "e3s_agent_outbound_trafic_ipv4" {
 
 resource "aws_vpc_security_group_egress_rule" "e3s_agent_outbound_trafic_ipv6" {
   security_group_id = aws_security_group.e3s_agent.id
+  ip_protocol       = "-1"
+  cidr_ipv6         = "::/0"
+}
+
+resource "aws_security_group" "linux_exporter" {
+  count  = var.asg_instance_metrics ? 1 : 0
+  vpc_id = aws_vpc.main.id
+  name   = local.e3s_linux_exporter_sg_name
+}
+
+resource "aws_vpc_security_group_ingress_rule" "linux_exporter" {
+  count             = length(aws_security_group.linux_exporter) > 0 ? 1 : 0
+  security_group_id = aws_security_group.linux_exporter[0].id
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "${aws_instance.e3s_server.private_ip}/32"
+  from_port         = 9100
+  to_port           = 9101
+  description       = "cadviser-node-exporters"
+}
+
+resource "aws_vpc_security_group_egress_rule" "outbound_linux_exporter_ipv4" {
+  count             = length(aws_security_group.linux_exporter) > 0 ? 1 : 0
+  security_group_id = aws_security_group.linux_exporter[0].id
+  ip_protocol       = "-1"
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_egress_rule" "outbound_linux_exporter_ipv6" {
+  count             = length(aws_security_group.linux_exporter) > 0 ? 1 : 0
+  security_group_id = aws_security_group.linux_exporter[0].id
+  ip_protocol       = "-1"
+  cidr_ipv6         = "::/0"
+}
+
+resource "aws_security_group" "windows_exporter" {
+  count  = var.asg_instance_metrics ? 1 : 0
+  vpc_id = aws_vpc.main.id
+  name   = local.e3s_windows_exporter_sg_name
+}
+
+resource "aws_vpc_security_group_ingress_rule" "windows_exporter" {
+  count             = length(aws_security_group.windows_exporter) > 0 ? 1 : 0
+  security_group_id = aws_security_group.windows_exporter[0].id
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "${aws_instance.e3s_server.private_ip}/32"
+  from_port         = 9182
+  description       = "windows-exporter"
+}
+
+resource "aws_vpc_security_group_egress_rule" "outbound_windows_exporter_ipv4" {
+  count             = length(aws_security_group.windows_exporter) > 0 ? 1 : 0
+  security_group_id = aws_security_group.windows_exporter[0].id
+  ip_protocol       = "-1"
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_egress_rule" "outbound_windows_exporter_ipv6" {
+  count             = length(aws_security_group.windows_exporter) > 0 ? 1 : 0
+  security_group_id = aws_security_group.windows_exporter[0].id
   ip_protocol       = "-1"
   cidr_ipv6         = "::/0"
 }

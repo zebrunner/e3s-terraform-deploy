@@ -112,7 +112,11 @@ resource "aws_launch_template" "e3s_windows" {
     name = aws_iam_instance_profile.e3s_agent.name
   }
 
-  user_data = base64encode(templatefile("./ec2_data/windows_user_data.ps1", { cluster_name = local.e3s_cluster_name, cidr_block = aws_vpc.main.cidr_block }))
+  user_data = base64encode(templatefile("./ec2_data/windows_user_data.ps1", {
+    cluster_name     = local.e3s_cluster_name,
+    cidr_block       = aws_vpc.main.cidr_block,
+    instance_metrics = format("$%s", var.asg_instance_metrics)
+  }))
 
   depends_on = [aws_iam_instance_profile.e3s_agent]
 }

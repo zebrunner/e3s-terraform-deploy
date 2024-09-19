@@ -12,5 +12,9 @@
     Initialize-ECSAgent -Cluster '${cluster_name}' -EnableTaskIAMRole -AwsvpcBlockIMDS -LoggingDrivers '["json-file","awslogs"]' -EnableTaskENI -AwsvpcAdditionalLocalRoutes '["${cidr_block}"]'
 
     Set-TimeZone -Name "Pacific Standard Time"
+
+    if (${instance_metrics}){
+        Start-Process "C:\Program Files\Exporter\windows_exporter.exe" -WindowStyle Hidden
+    }
 </powershell>
 <persist>true</persist>

@@ -35,6 +35,7 @@
                 "ecs:DeleteCapacityProvider",
                 "ecs:CreateService",
                 "ecs:DescribeServices",
+                "ecs:UpdateService",
                 "ecs:DeleteService"
             ],
             "Resource": [

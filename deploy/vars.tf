@@ -144,6 +144,8 @@ locals {
   e3s_rds_sg_name                 = join("-", [local.service_name, var.environment, "rds", "sg"])
   e3s_cache_sg_name               = join("-", [local.service_name, var.environment, "cache", "sg"])
   e3s_cloudwatch_endpoint_sg_name = join("-", [local.service_name, var.environment, "cloudwatch", "sg"])
+  e3s_linux_exporter_sg_name      = join("-", [local.service_name, var.environment, "linux", "exporter", "sg"])
+  e3s_windows_exporter_sg_name    = join("-", [local.service_name, var.environment, "windows", "exporter", "sg"])
 
   e3s_cluster_name                 = join("-", [local.service_name, var.environment])
   e3s_linux_launch_template_name   = join("-", [local.service_name, var.environment, "linux", "launch", "template"])
