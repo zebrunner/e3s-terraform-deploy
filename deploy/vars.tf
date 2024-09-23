@@ -140,7 +140,8 @@ locals {
 
   e3s_server_sg_name              = join("-", [local.service_name, var.environment, "sg"])
   e3s_agent_sg_name               = join("-", [local.service_name, var.environment, "agent", "sg"])
-  e3s_rdp_sg_name                 = join("-", [local.service_name, var.environment, "rdp", "sg"])
+  e3s_rdp_sg_name                 = join("-", [local.service_name, var.environment, "agent", "rdp", "sg"])
+  e3s_ssh_sg_name                 = join("-", [local.service_name, var.environment, "agent", "ssh", "sg"])
   e3s_rds_sg_name                 = join("-", [local.service_name, var.environment, "rds", "sg"])
   e3s_cache_sg_name               = join("-", [local.service_name, var.environment, "cache", "sg"])
   e3s_cloudwatch_endpoint_sg_name = join("-", [local.service_name, var.environment, "cloudwatch", "sg"])
