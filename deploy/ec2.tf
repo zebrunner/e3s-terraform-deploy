@@ -33,7 +33,7 @@ locals {
 resource "aws_launch_template" "e3s_linux" {
   name                   = local.e3s_linux_launch_template_name
   image_id               = data.aws_ami.zbr_linux.id
-  vpc_security_group_ids = merge(aws_security_group.e3s_agent.id, [for v in local.linux_sg_arr : v[0].id if length(v) > 0])
+  vpc_security_group_ids = setunion(aws_security_group.e3s_agent.id, [for v in local.linux_sg_arr : v[0].id if length(v) > 0])
   ebs_optimized          = true
   key_name               = var.allow_agent_ssh ? aws_key_pair.agent[0].key_name : ""
 
@@ -85,7 +85,7 @@ locals {
 resource "aws_launch_template" "e3s_windows" {
   name                   = local.e3s_windows_launch_template_name
   image_id               = data.aws_ami.zbr_windows.id
-  vpc_security_group_ids = merge(aws_security_group.e3s_agent.id, [for v in local.windows_sg_arr : v[0].id if length(v) > 0])
+  vpc_security_group_ids = setunion(aws_security_group.e3s_agent.id, [for v in local.windows_sg_arr : v[0].id if length(v) > 0])
   key_name               = var.allow_agent_ssh ? aws_key_pair.agent[0].key_name : ""
 
   ebs_optimized = true
