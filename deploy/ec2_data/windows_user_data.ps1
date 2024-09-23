@@ -14,7 +14,14 @@
     Set-TimeZone -Name "Pacific Standard Time"
 
     if (${instance_metrics}){
-        Start-Process "C:\Program Files\Exporter\windows_exporter.exe" -WindowStyle Hidden
+        New-NetFirewallRule -DisplayName 'Exporter' `
+                    -LocalPort 9182 -Action Allow `
+                    -Profile 'Public' `
+                    -Protocol TCP `
+                    -Direction Inbound
+
+        Start-Process "C:\Program Files\Exporter\windows_exporter.exe" -WindowStyle Hidden -ArgumentList '--web.listen-address=:9182' '--collectors.enabled "[defaults],process,container"'
     }
 </powershell>
 <persist>true</persist>
+--web.listen-address=:9182
