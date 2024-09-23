@@ -20,7 +20,7 @@
                     -Protocol TCP `
                     -Direction Inbound
 
-        Start-Process "C:\Program Files\Exporter\windows_exporter.exe" -WindowStyle Hidden -ArgumentList '--web.listen-address=:9182' '--collectors.enabled "[defaults],process,container"'
+                    Start-Process "C:\Program Files\Exporter\windows_exporter.exe" -ArgumentList '--web.listen-address=:9183', '--collectors.enabled "[defaults],process,container"' -RedirectStandardError "C:\Program Files\Exporter\exporter.logs" -WindowStyle Hidden
     }
 </powershell>
 <persist>true</persist>
