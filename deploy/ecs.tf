@@ -109,7 +109,7 @@ resource "aws_ecs_task_definition" "linux_node_exporter" {
       portMappings = [
         {
           containerPort = 8080
-          hostPort      = 9101
+          hostPort      = 8080
           protocol      = "tcp"
         }
       ],
@@ -155,6 +155,13 @@ resource "aws_ecs_task_definition" "linux_node_exporter" {
       cpu               = 128
       memory            = 256
       memoryReservation = 256
+      portMappings = [
+        {
+          containerPort = 9100
+          hostPort      = 9100
+          protocol      = "tcp"
+        }
+      ],
       pidMode           = "host"
       privileged        = true
       mountPoints = [

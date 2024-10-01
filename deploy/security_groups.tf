@@ -139,14 +139,24 @@ resource "aws_security_group" "linux_exporter" {
   name   = local.e3s_linux_exporter_sg_name
 }
 
-resource "aws_vpc_security_group_ingress_rule" "linux_exporter" {
+resource "aws_vpc_security_group_ingress_rule" "linux_node_exporter" {
   count             = length(aws_security_group.linux_exporter) > 0 ? 1 : 0
   security_group_id = aws_security_group.linux_exporter[0].id
   ip_protocol       = "tcp"
   cidr_ipv4         = "${aws_instance.e3s_server.private_ip}/32"
   from_port         = 9100
-  to_port           = 9101
-  description       = "cadviser-node-exporters"
+  to_port           = 9100
+  description       = "node-exporter"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "linux_cadviser_exporter" {
+  count             = length(aws_security_group.linux_exporter) > 0 ? 1 : 0
+  security_group_id = aws_security_group.linux_exporter[0].id
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "${aws_instance.e3s_server.private_ip}/32"
+  from_port         = 8080
+  to_port           = 8080
+  description       = "cadviser-exporter"
 }
 
 resource "aws_vpc_security_group_egress_rule" "outbound_linux_exporter_ipv4" {
