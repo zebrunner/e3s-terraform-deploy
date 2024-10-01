@@ -276,10 +276,10 @@ resource "aws_ecs_task_definition" "linux_node_exporter" {
 # }
 
 resource "aws_ecs_service" "linux_exporter" {
-  count               = length(aws_ecs_task_definition.linux_exporter) > 0 ? 1 : 0
+  count               = length(aws_ecs_task_definition.linux_node_exporter) > 0 ? 1 : 0
   name                = "linux-exporter"
   cluster             = aws_ecs_cluster.e3s.name
-  task_definition     = aws_ecs_task_definition.linux_exporter[0].arn
+  task_definition     = aws_ecs_task_definition.linux_node_exporter[0].arn
   launch_type         = "EC2"
   scheduling_strategy = "DAEMON"
   placement_constraints {
