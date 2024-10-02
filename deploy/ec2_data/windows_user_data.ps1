@@ -16,7 +16,7 @@
     if (${instance_metrics}){
         New-NetFirewallRule -DisplayName 'Exporter' -LocalPort 9182 -Action Allow -Profile 'Public' -Protocol TCP -Direction Inbound
 
-        Start-Process "C:\Program Files\Exporter\windows_exporter.exe" -ArgumentList '--web.listen-address=:9182', '--collectors.enabled "cpu,memory,net,logical_disk,container"' -RedirectStandardError "C:\Program Files\Exporter\exporter.logs" -WindowStyle Hidden
+        Start-Process "C:\Program Files\Exporter\windows_exporter.exe" -ArgumentList '--web.listen-address=:9182', '--collectors.enabled "[defaults],container"' -RedirectStandardError "C:\Program Files\Exporter\exporter.logs" -WindowStyle Hidden
     }
 </powershell>
 <persist>true</persist>
