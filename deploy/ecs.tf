@@ -62,10 +62,6 @@ resource "aws_ecs_task_definition" "linux_node_exporter" {
   task_role_arn            = aws_iam_role.e3s_exporter[0].arn
   network_mode             = "host"
 
-  tags = {
-    "aws:ecs:serviceManaged" = ""
-  }
-
   volume {
     name      = "proc"
     host_path = "/proc"
