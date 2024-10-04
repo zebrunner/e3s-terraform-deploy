@@ -166,8 +166,8 @@ resource "aws_ecs_task_definition" "linux_node_exporter" {
           protocol      = "tcp"
         }
       ],
-      pidMode           = "host"
-      privileged        = true
+      pidMode    = "host"
+      privileged = true
       mountPoints = [
         {
           sourceVolume  = "proc"
@@ -206,4 +206,6 @@ resource "aws_ecs_service" "linux_exporter" {
     type       = "memberOf"
     expression = "attribute:ecs.os-type == linux"
   }
+
+  enable_ecs_managed_tags = true
 }
