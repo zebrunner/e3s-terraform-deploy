@@ -14,7 +14,8 @@
                 "elasticloadbalancing:DescribeLoadBalancers",
                 "elasticloadbalancing:DescribeListeners",
                 "autoscaling:DescribeAutoScalingGroups",
-                "autoscaling:DescribeAutoScalingInstances"
+                "autoscaling:DescribeAutoScalingInstances",
+                "ecs:DescribeTaskDefinition"
             ],
             "Resource": "*"
         },
@@ -29,14 +30,16 @@
                 "ecs:ListContainerInstances",
                 "ecs:RunTask",
                 "ecs:DescribeCapacityProviders",
-                "ecs:UpdateContainerInstancesState"
+                "ecs:UpdateContainerInstancesState",
+                "ecs:DescribeServices"
             ],
             "Resource": [
                 "arn:aws:ecs:${region}:${account}:container-instance/e3s-${env}/*",
                 "arn:aws:ecs:${region}:${account}:task/e3s-${env}/*",
                 "arn:aws:ecs:${region}:${account}:cluster/e3s-${env}",
                 "arn:aws:ecs:${region}:${account}:task-definition/${env}-*",
-                "arn:aws:ecs:${region}:${account}:capacity-provider/e3s-${env}-*"
+                "arn:aws:ecs:${region}:${account}:capacity-provider/e3s-${env}-*",
+                "arn:aws:ecs:${region}:${account}:service/e3s-${env}/*"
             ]
         },
         {
