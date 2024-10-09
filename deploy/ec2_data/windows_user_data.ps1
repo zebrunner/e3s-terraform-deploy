@@ -12,5 +12,12 @@
     Initialize-ECSAgent -Cluster '${cluster_name}' -EnableTaskIAMRole -AwsvpcBlockIMDS -LoggingDrivers '["json-file","awslogs"]' -EnableTaskENI -AwsvpcAdditionalLocalRoutes '["${cidr_block}"]'
 
     Set-TimeZone -Name "Pacific Standard Time"
+
+    if (${instance_metrics}){
+        New-NetFirewallRule -DisplayName 'Exporter' -LocalPort 9182 -Action Allow -Profile 'Public' -Protocol TCP -Direction Inbound
+
+        Start-Process "C:\Program Files\Exporter\windows_exporter.exe" -ArgumentList '--web.listen-address=:9182', '--collectors.enabled "[defaults],container"' -RedirectStandardError "C:\Program Files\Exporter\exporter.logs" -WindowStyle Hidden
+    }
 </powershell>
 <persist>true</persist>
+--web.listen-address=:9182
