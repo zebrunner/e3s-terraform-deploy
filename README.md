@@ -37,7 +37,7 @@ Configured aws profile with the following policies:
 * `{dynamodb_table}` - Dynamodb table name, which will support terraform's lock mechanism
 * `{dynamodb_region}` - Region of dynamodb table
 
-2. In [terraform-ec2-view-policy.json](policies/terraform-ec2-view-policy.json) should be replaced the next placeholders:
+2. In [terraform-view-policy.json](policies/terraform-view-policy.json) should be replaced the next placeholders:
 * `{env}` - Prefix for almost all e3s aws resources
 * `{region}` - Aws region in which all e3s resources will be deployed
 * `{account}` - Aws account id
