@@ -78,6 +78,27 @@
                     "aws:RequestTag/Environment": "{env}"
                 }
             }
+        },
+        {
+            "Sid": "NoConstraints",
+            "Effect": "Allow",
+            "Action": [
+                "logs:DescribeLogGroups",
+                "elasticloadbalancing:DescribeTags",
+                "elasticloadbalancing:DescribeTargetGroups",
+                "elasticloadbalancing:DescribeTargetGroupAttributes",
+                "elasticloadbalancing:DescribeLoadBalancers",
+                "elasticloadbalancing:DescribeLoadBalancerAttributes",
+                "elasticloadbalancing:DescribeListeners",
+                "ecs:DeregisterTaskDefinition",
+                "rds:DescribeDBInstances",
+                "autoscaling:DescribeScalingActivities",
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribePolicies"
+            ],
+            "Resource": [
+                "*"
+            ]
         }
     ]
 }
