@@ -20,33 +20,6 @@ resource "aws_vpc_security_group_ingress_rule" "e3s_server_router_ports" {
   description       = "router_ports"
 }
 
-resource "aws_vpc_security_group_ingress_rule" "e3s_server_prometheus_port" {
-  security_group_id = aws_security_group.e3s_server.id
-  ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 9090
-  to_port           = 9090
-  description       = "prometheus"
-}
-
-resource "aws_vpc_security_group_ingress_rule" "e3s_server_alertmanager_port" {
-  security_group_id = aws_security_group.e3s_server.id
-  ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 9093
-  to_port           = 9093
-  description       = "alertmanager"
-}
-
-resource "aws_vpc_security_group_ingress_rule" "e3s_server_grafana_port" {
-  security_group_id = aws_security_group.e3s_server.id
-  ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 3000
-  to_port           = 3000
-  description       = "grafana"
-}
-
 resource "aws_vpc_security_group_ingress_rule" "e3s_server_ssh_ipv4" {
   security_group_id = aws_security_group.e3s_server.id
   ip_protocol       = "tcp"
