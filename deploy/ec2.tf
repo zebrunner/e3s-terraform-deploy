@@ -26,10 +26,14 @@ data "aws_ami" "zbr_windows" {
   }
 }
 
+locals {
+  linux_sg_arr = [aws_security_group.linux_ssh, aws_security_group.linux_exporter]
+}
+
 resource "aws_launch_template" "e3s_linux" {
   name                   = local.e3s_linux_launch_template_name
   image_id               = data.aws_ami.zbr_linux.id
-  vpc_security_group_ids = [aws_security_group.e3s_agent.id]
+  vpc_security_group_ids = setunion([aws_security_group.e3s_agent.id], [for v in local.linux_sg_arr : v[0].id if length(v) > 0])
   ebs_optimized          = true
   key_name               = var.allow_agent_ssh ? aws_key_pair.agent[0].key_name : ""
 
@@ -74,10 +78,14 @@ resource "aws_launch_template" "e3s_linux" {
   depends_on = [aws_iam_instance_profile.e3s_agent]
 }
 
+locals {
+  windows_sg_arr = [aws_security_group.windows_rdp, aws_security_group.windows_exporter]
+}
+
 resource "aws_launch_template" "e3s_windows" {
   name                   = local.e3s_windows_launch_template_name
   image_id               = data.aws_ami.zbr_windows.id
-  vpc_security_group_ids = var.allow_agent_ssh ? [aws_security_group.e3s_agent.id, aws_security_group.windows_rdp[0].id] : [aws_security_group.e3s_agent.id]
+  vpc_security_group_ids = setunion([aws_security_group.e3s_agent.id], [for v in local.windows_sg_arr : v[0].id if length(v) > 0])
   key_name               = var.allow_agent_ssh ? aws_key_pair.agent[0].key_name : ""
 
   ebs_optimized = true
@@ -112,7 +120,11 @@ resource "aws_launch_template" "e3s_windows" {
     name = aws_iam_instance_profile.e3s_agent.name
   }
 
-  user_data = base64encode(templatefile("./ec2_data/windows_user_data.ps1", { cluster_name = local.e3s_cluster_name, cidr_block = aws_vpc.main.cidr_block }))
+  user_data = base64encode(templatefile("./ec2_data/windows_user_data.ps1", {
+    cluster_name     = local.e3s_cluster_name,
+    cidr_block       = aws_vpc.main.cidr_block,
+    instance_metrics = format("$%s", var.asg_instance_metrics)
+  }))
 
   depends_on = [aws_iam_instance_profile.e3s_agent]
 }

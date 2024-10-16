@@ -35,7 +35,7 @@ resource "aws_autoscaling_group" "linux" {
   health_check_type         = "EC2"
   health_check_grace_period = 10
 
-  vpc_zone_identifier = length(aws_subnet.private_per_zone) != 0 ? [for s in aws_subnet.private_per_zone : s.id] : [for s in aws_subnet.public_per_zone : s.id] 
+  vpc_zone_identifier = length(aws_subnet.private_per_zone) != 0 ? [for s in aws_subnet.private_per_zone : s.id] : [for s in aws_subnet.public_per_zone : s.id]
 
   termination_policies  = ["AllocationStrategy"]
   protect_from_scale_in = true
@@ -87,7 +87,7 @@ resource "aws_autoscaling_group" "windows" {
   health_check_type         = "EC2"
   health_check_grace_period = 10
 
-  vpc_zone_identifier = length(aws_subnet.private_per_zone) != 0 ? [for s in aws_subnet.private_per_zone : s.id] : [for s in aws_subnet.public_per_zone : s.id] 
+  vpc_zone_identifier = length(aws_subnet.private_per_zone) != 0 ? [for s in aws_subnet.private_per_zone : s.id] : [for s in aws_subnet.public_per_zone : s.id]
 
   termination_policies  = ["AllocationStrategy"]
   protect_from_scale_in = true
