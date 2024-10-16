@@ -103,14 +103,20 @@ replace "AWS_TARGET_GROUP" "AWS_TARGET_GROUP=${target_group}" "./properties/rout
 
 # datasources.yml
 TOKEN=`curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` && e3s_private_ip=`curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/local-ipv4`
-replace "http://{e3s_private_ip}:9090" "http://${e3s_private_ip}:9090" "./monitoring/grafana/provisioning/datasources/datasources.yml"
-replace "http://{e3s_private_ip}:9093" "http://${e3s_private_ip}:9093" "./monitoring/grafana/provisioning/datasources/datasources.yml"
+replace "http://{e3s_private_ip}:9090" "http://$e3s_private_ip:9090" "./monitoring/grafana/provisioning/datasources/datasources.yml"
+replace "http://{e3s_private_ip}:9093" "http://$e3s_private_ip:9093" "./monitoring/grafana/provisioning/datasources/datasources.yml"
 
 # prometheus.yml
 replace "e3s-{env}-linux-asg" "${linux_asg}" "./monitoring/prometheus/prometheus.yml"
 replace "e3s-{env}-windows-asg" "${windows_asg}" "./monitoring/prometheus/prometheus.yml"
 
+# grafana.ini
+replace "{e3s_dns}/metrics/grafana" "http://${e3s_lb_dns}/metrics/grafana" "./monitoring/grafana/grafana.ini"
+
 # start server
 ./zebrunner.sh start
+
+# start prometheus
+./zebrunner.sh start monitoring
 
 sudo chown -R "$user" "$e3s_path"

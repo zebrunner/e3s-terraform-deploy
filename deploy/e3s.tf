@@ -113,6 +113,7 @@ resource "aws_instance" "e3s_server" {
 
     linux_asg   = local.e3s_linux_autoscaling_name
     windows_asg = local.e3s_windows_autoscaling_name
+    e3s_lb_dns  = aws_lb.main.dns_name
   })
 
   # depends_on = [aws_ecs_cluster.e3s, aws_lb_listener.main, aws_rds_cluster_instance.aurora_instance]
