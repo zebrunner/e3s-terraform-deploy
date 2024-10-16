@@ -110,6 +110,9 @@ resource "aws_instance" "e3s_server" {
     db_dns        = var.data_layer_remote ? aws_db_instance.postgres[0].endpoint : ""
     cache_address = var.data_layer_remote ? aws_elasticache_serverless_cache.redis[0].endpoint[0].address : ""
     cache_port    = var.data_layer_remote ? aws_elasticache_serverless_cache.redis[0].endpoint[0].port : ""
+
+    linux_asg   = local.e3s_linux_autoscaling_name
+    windows_asg = local.e3s_windows_autoscaling_name
   })
 
   # depends_on = [aws_ecs_cluster.e3s, aws_lb_listener.main, aws_rds_cluster_instance.aurora_instance]
