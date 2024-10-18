@@ -54,3 +54,154 @@ aws autoscaling put-scaling-policy --region ${var.region} --auto-scaling-group-n
 EOF
   }
 }
+
+resource "aws_ecs_task_definition" "linux_node_exporter" {
+  count                    = var.asg_instance_metrics ? 1 : 0
+  family                   = "exporters"
+  requires_compatibilities = ["EC2"]
+  task_role_arn            = aws_iam_role.e3s_exporter[0].arn
+  network_mode             = "host"
+
+  volume {
+    name      = "proc"
+    host_path = "/proc"
+  }
+
+  volume {
+    name      = "sys"
+    host_path = "/sys"
+  }
+
+  volume {
+    name      = "root"
+    host_path = "/"
+  }
+
+  volume {
+    name      = "cgroup"
+    host_path = "/cgroup"
+  }
+
+  volume {
+    name      = "var_run"
+    host_path = "/var/run"
+  }
+
+  volume {
+    name      = "var_lib_docker"
+    host_path = "/var/lib/docker"
+  }
+
+  volume {
+    name      = "dev_disk"
+    host_path = "/dev/disk"
+  }
+
+  # port 9100 
+  container_definitions = jsonencode([
+    {
+      name              = "cadvisor-exporter"
+      image             = "gcr.io/cadvisor/cadvisor"
+      essential         = true
+      cpu               = 128
+      memory            = 256
+      memoryReservation = 256
+      portMappings = [
+        {
+          containerPort = 8080
+          hostPort      = 8080
+          protocol      = "tcp"
+        }
+      ],
+      mountPoints = [
+        {
+          sourceVolume  = "root"
+          containerPath = "/rootfs"
+          readOnly      = true
+        },
+        {
+          sourceVolume  = "cgroup"
+          containerPath = "/cgroup"
+          readOnly      = true
+        },
+        {
+          sourceVolume  = "var_run"
+          containerPath = "/var/run"
+          readOnly      = true
+        },
+        {
+          sourceVolume  = "var_lib_docker"
+          containerPath = "/var/lib/docker"
+          readOnly      = true
+        },
+        {
+          sourceVolume  = "dev_disk"
+          containerPath = "/dev/disk"
+          readOnly      = true
+        },
+        {
+          sourceVolume  = "cgroup"
+          containerPath = "/sys/fs/cgroup"
+          readOnly      = true
+        }
+      ],
+      privileged             = true,
+      readonlyRootFilesystem = false
+    },
+    {
+      name              = "node-exporter"
+      image             = "public.ecr.aws/zebrunner/node-exporter:v1.8.2"
+      essential         = true
+      cpu               = 128
+      memory            = 256
+      memoryReservation = 256
+      portMappings = [
+        {
+          containerPort = 9100
+          hostPort      = 9100
+          protocol      = "tcp"
+        }
+      ],
+      pidMode    = "host"
+      privileged = true
+      mountPoints = [
+        {
+          sourceVolume  = "proc"
+          containerPath = "/host/proc"
+          readOnly      = true
+        },
+        {
+          sourceVolume  = "sys"
+          containerPath = "/host/sys"
+          readOnly      = true
+        },
+        {
+          sourceVolume  = "root"
+          containerPath = "/rootfs"
+          readOnly      = true
+        }
+      ]
+      command = [
+        "--path.procfs=/host/proc",
+        "--path.rootfs=/rootfs",
+        "--path.sysfs=/host/sys",
+        "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+      ]
+    }
+  ])
+}
+
+resource "aws_ecs_service" "linux_exporter" {
+  count               = length(aws_ecs_task_definition.linux_node_exporter) > 0 ? 1 : 0
+  name                = "linux-exporter"
+  cluster             = aws_ecs_cluster.e3s.name
+  task_definition     = aws_ecs_task_definition.linux_node_exporter[0].arn
+  launch_type         = "EC2"
+  scheduling_strategy = "DAEMON"
+  placement_constraints {
+    type       = "memberOf"
+    expression = "attribute:ecs.os-type == linux"
+  }
+
+  enable_ecs_managed_tags = true
+}

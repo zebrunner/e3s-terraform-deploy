@@ -50,6 +50,11 @@ variable "data_layer_remote" {
   default = true
 }
 
+variable "asg_instance_metrics" {
+  type    = bool
+  default = false
+}
+
 variable "nat" {
   type    = bool
   default = false
@@ -125,19 +130,23 @@ locals {
 
   e3s_agent_key_name = join("-", [local.service_name, var.environment, "agent"])
 
-  e3s_policy_name       = join("-", [local.service_name, var.environment, "policy"])
-  e3s_role_name         = join("-", [local.service_name, var.environment, "role"])
-  e3s_agent_policy_name = join("-", [local.service_name, var.environment, "agent", "policy"])
-  e3s_agent_role_name   = join("-", [local.service_name, var.environment, "agent", "role"])
-  e3s_task_policy_name  = join("-", [local.service_name, var.environment, "task", "policy"])
-  e3s_task_role_name    = join("-", [local.service_name, var.environment, "task", "role"])
+  e3s_policy_name        = join("-", [local.service_name, var.environment, "policy"])
+  e3s_role_name          = join("-", [local.service_name, var.environment, "role"])
+  e3s_agent_policy_name  = join("-", [local.service_name, var.environment, "agent", "policy"])
+  e3s_agent_role_name    = join("-", [local.service_name, var.environment, "agent", "role"])
+  e3s_task_policy_name   = join("-", [local.service_name, var.environment, "task", "policy"])
+  e3s_task_role_name     = join("-", [local.service_name, var.environment, "task", "role"])
+  e3s_exporter_role_name = join("-", [local.service_name, var.environment, "exporter", "role"])
 
   e3s_server_sg_name              = join("-", [local.service_name, var.environment, "sg"])
   e3s_agent_sg_name               = join("-", [local.service_name, var.environment, "agent", "sg"])
-  e3s_rdp_sg_name                 = join("-", [local.service_name, var.environment, "rdp", "sg"])
+  e3s_rdp_sg_name                 = join("-", [local.service_name, var.environment, "agent", "rdp", "sg"])
+  e3s_ssh_sg_name                 = join("-", [local.service_name, var.environment, "agent", "ssh", "sg"])
   e3s_rds_sg_name                 = join("-", [local.service_name, var.environment, "rds", "sg"])
   e3s_cache_sg_name               = join("-", [local.service_name, var.environment, "cache", "sg"])
   e3s_cloudwatch_endpoint_sg_name = join("-", [local.service_name, var.environment, "cloudwatch", "sg"])
+  e3s_linux_exporter_sg_name      = join("-", [local.service_name, var.environment, "linux", "exporter", "sg"])
+  e3s_windows_exporter_sg_name    = join("-", [local.service_name, var.environment, "windows", "exporter", "sg"])
 
   e3s_cluster_name                 = join("-", [local.service_name, var.environment])
   e3s_linux_launch_template_name   = join("-", [local.service_name, var.environment, "linux", "launch", "template"])

@@ -2,26 +2,6 @@
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "NoConstraints",
-            "Effect": "Allow",
-            "Action": [
-                "logs:DescribeLogGroups",
-                "elasticloadbalancing:DescribeTags",
-                "elasticloadbalancing:DescribeTargetGroups",
-                "elasticloadbalancing:DescribeTargetGroupAttributes",
-                "elasticloadbalancing:DescribeLoadBalancers",
-                "elasticloadbalancing:DescribeLoadBalancerAttributes",
-                "elasticloadbalancing:DescribeListeners",
-                "rds:DescribeDBInstances",
-                "autoscaling:DescribeScalingActivities",
-                "autoscaling:DescribeAutoScalingGroups",
-                "autoscaling:DescribePolicies"
-            ],
-            "Resource": [
-                "*"
-            ]
-        },
-        {
             "Sid": "ECS",
             "Effect": "Allow",
             "Action": [
@@ -32,13 +12,33 @@
                 "ecs:DeleteCluster",
                 "ecs:CreateCapacityProvider",
                 "ecs:DescribeCapacityProviders",
-                "ecs:DeleteCapacityProvider"
+                "ecs:DeleteCapacityProvider",
+                "ecs:CreateService",
+                "ecs:DescribeServices",
+                "ecs:UpdateService",
+                "ecs:DeleteService"
             ],
             "Resource": [
                 "arn:aws:ecs:{region}:{account}:cluster/e3s-{env}",
                 "arn:aws:ecs:{region}:{account}:capacity-provider/e3s-{env}-linux-capacityprovider",
-                "arn:aws:ecs:{region}:{account}:capacity-provider/e3s-{env}-windows-capacityprovider"
+                "arn:aws:ecs:{region}:{account}:capacity-provider/e3s-{env}-windows-capacityprovider",
+                "arn:aws:ecs:{region}:{account}:service/e3s-{env}/linux-exporter"
             ]
+        },
+        {
+            "Sid": "ECSTaskDefinition",
+            "Effect": "Allow",
+            "Action": [
+                "ecs:TagResource",
+                "ecs:RegisterTaskDefinition"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestTag/Name": "e3s",
+                    "aws:RequestTag/Environment": "{env}"
+                }
+            }
         },
         {
             "Sid": "Autoscaling",
@@ -71,6 +71,7 @@
                 "iam:CreateRole",
                 "iam:AttachRolePolicy",
                 "iam:GetRole",
+                "iam:CreatePolicyVersion",
                 "iam:ListRolePolicies",
                 "iam:ListAttachedRolePolicies",
                 "iam:ListInstanceProfilesForRole",
