@@ -34,8 +34,8 @@ Configured aws profile with the following policies:
 * `{bucket_name}` - Name of a bucket that would be used by e3s
 * `{state_bucket_name}` - Bucket to save current state of terraform
 * `{state_bucket_key}` - State file path in bucket
-* `{dynamodb_table}` - Dynamodb table name, which will support terraform's lock mechanism
-* `{dynamodb_region}` - Region of dynamodb table
+* `{dynamodb_table}` - [optional] Dynamodb table name, which will support terraform's lock mechanism. If not used, delete RemoteStateLock block from policy file.
+* `{dynamodb_region}` - [optional] Region of dynamodb table. If not used, delete RemoteStateLock block from policy file.
 
 2. In [terraform-ec2-view-policy.json](policies/terraform-ec2-view-policy.json) should be replaced the next placeholders:
 * `{env}` - Prefix for almost all e3s aws resources
@@ -120,8 +120,8 @@ Example of s3 backend state configure (config.s3.tfbackend file):
 bucket         = "{state_bucket_name}"
 key            = "{state_bucket_key}"
 region         = "{state_bucket_region}"
-dynamodb_table = "{state_dynamodb_table}"
 encrypt        = true
+[optonal] dynamodb_table = "{state_dynamodb_table}" 
 ```
 
 4. Init terraform providers
