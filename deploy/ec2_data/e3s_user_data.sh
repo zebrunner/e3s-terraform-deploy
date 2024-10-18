@@ -109,6 +109,7 @@ replace "http://{e3s_private_ip}:9093" "http://$e3s_private_ip:9093" "./monitori
 # prometheus.yml
 replace "e3s-{env}-linux-asg" "${linux_asg}" "./monitoring/prometheus/prometheus.yml"
 replace "e3s-{env}-windows-asg" "${windows_asg}" "./monitoring/prometheus/prometheus.yml"
+replace "{region}" "${region}" "./monitoring/prometheus/prometheus.yml"
 
 # grafana.ini
 replace "{e3s_dns}/metrics/grafana" "http://${e3s_lb_dns}/metrics/grafana" "./monitoring/grafana/grafana.ini"
