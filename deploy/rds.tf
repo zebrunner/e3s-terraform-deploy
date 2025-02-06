@@ -14,7 +14,7 @@ resource "aws_db_instance" "postgres" {
   max_allocated_storage      = 30
   instance_class             = "db.t4g.small"
   engine                     = "postgres"
-  engine_version             = "13.13"
+  engine_version             = "13.15"
   username                   = var.remote_db.username
   password                   = var.remote_db.pass
   auto_minor_version_upgrade = true

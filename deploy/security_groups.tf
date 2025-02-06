@@ -65,7 +65,7 @@ resource "aws_vpc_security_group_ingress_rule" "e3s_agent_inbound_trafic" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "e3s_agent_ssh_ipv4" {
-  count             = var.allow_agent_ssh ? 1 : 0
+  count             = var.agent_key_pair.generate ? 1 : 0
   security_group_id = aws_security_group.e3s_agent.id
   ip_protocol       = "tcp"
   cidr_ipv4         = "${aws_instance.e3s_server.private_ip}/32"
@@ -87,7 +87,7 @@ resource "aws_vpc_security_group_egress_rule" "e3s_agent_outbound_trafic_ipv6" {
 }
 
 resource "aws_security_group" "windows_rdp" {
-  count  = var.allow_agent_ssh ? 1 : 0
+  count  = var.agent_key_pair.generate ? 1 : 0
   vpc_id = aws_vpc.main.id
   name   = local.e3s_rdp_sg_name
 }

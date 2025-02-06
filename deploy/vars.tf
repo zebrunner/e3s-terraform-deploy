@@ -10,7 +10,7 @@ variable "region" {
   nullable = false
 }
 
-variable "e3s_key_name" {
+variable "e3s_key_pair_name" {
   type     = string
   nullable = false
 }
@@ -25,9 +25,21 @@ variable "bucket" {
 }
 
 # Optional
-variable "allow_agent_ssh" {
-  type    = bool
-  default = false
+variable "agent_key_pair" {
+  type = object({
+    generate                 = bool
+    save_private_key_in_file = bool
+    save_public_key_in_file  = bool
+    private_key_file_path    = string
+    public_key_file_path     = string
+  })
+  default = {
+    generate                 = false
+    save_private_key_in_file = false
+    save_public_key_in_file  = false
+    private_key_file_path    = "private_key.pem"
+    public_key_file_path     = "public_key.pem"
+  }
 }
 
 variable "cert" {
@@ -123,7 +135,7 @@ locals {
 
   e3s_server_instance_name = join("-", [local.service_name, var.environment])
 
-  e3s_agent_key_name = join("-", [local.service_name, var.environment, "agent"])
+  e3s_agent_key_pair_name = join("-", [local.service_name, var.environment, "agent"])
 
   e3s_policy_name       = join("-", [local.service_name, var.environment, "policy"])
   e3s_role_name         = join("-", [local.service_name, var.environment, "role"])

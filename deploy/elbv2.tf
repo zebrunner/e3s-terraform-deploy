@@ -38,7 +38,7 @@ resource "aws_lb_listener" "main" {
   # https://github.com/hashicorp/terraform-provider-aws/issues/1851
   port            = var.cert == "" ? 80 : 443
   protocol        = var.cert == "" ? "HTTP" : "HTTPS"
-  ssl_policy      = var.cert == "" ? "" : "ELBSecurityPolicy-2016-08"
+  ssl_policy      = var.cert == "" ? "" : "ELBSecurityPolicy-TLS13-1-2-2021-06"
   certificate_arn = var.cert
 
   default_action {

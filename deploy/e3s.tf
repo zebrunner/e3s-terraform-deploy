@@ -2,16 +2,32 @@ locals {
   subnets_arr = [for subnet in aws_subnet.public_per_zone : subnet.id]
 }
 
-resource "tls_private_key" "pri_key" {
-  count     = var.allow_agent_ssh ? 1 : 0
+resource "tls_private_key" "agent_key_pair" {
+  count     = var.agent_key_pair.generate ? 1 : 0
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
+# Save private key for the agent to a file
+resource "local_file" "private_key" {
+  count           = var.agent_key_pair.generate && var.agent_key_pair.save_private_key_in_file ? 1 : 0
+  content         = tls_private_key.agent_key_pair[0].private_key_pem
+  filename        = pathexpand(var.agent_key_pair.private_key_file_path)
+  file_permission = "0400"  # Restricted permissions for security
+}
+
+# Save public key to a file
+resource "local_file" "public_key" {
+  count           = var.agent_key_pair.generate && var.agent_key_pair.save_public_key_in_file ? 1 : 0
+  content         = tls_private_key.agent_key_pair[0].public_key_pem
+  filename        = pathexpand(var.agent_key_pair.public_key_file_path)
+  file_permission = "0644"
+}
+
 resource "aws_key_pair" "agent" {
-  count      = var.allow_agent_ssh ? 1 : 0
-  key_name   = local.e3s_agent_key_name
-  public_key = tls_private_key.pri_key[0].public_key_openssh
+  count      = var.agent_key_pair.generate ? 1 : 0
+  key_name   = local.e3s_agent_key_pair_name
+  public_key = tls_private_key.agent_key_pair[0].public_key_openssh
 }
 
 data "aws_ami" "ubuntu_22_04" {
@@ -52,7 +68,7 @@ resource "aws_instance" "e3s_server" {
 
   subnet_id = local.subnets_arr[0]
 
-  key_name = var.e3s_key_name
+  key_name = var.e3s_key_pair_name
 
   vpc_security_group_ids = [aws_security_group.e3s_server.id]
 
@@ -99,8 +115,8 @@ resource "aws_instance" "e3s_server" {
     zbr_user = var.zebrunner.user
     zbr_pass = var.zebrunner.pass
 
-    agent_key      = length(tls_private_key.pri_key) > 0 ? tls_private_key.pri_key[0].private_key_pem : ""
-    agent_key_name = local.e3s_agent_key_name
+    agent_key      = length(tls_private_key.agent_key_pair) > 0 ? tls_private_key.agent_key_pair[0].private_key_pem : ""
+    agent_key_name = local.e3s_agent_key_pair_name
 
     # db_dns      = aws_rds_cluster.aurora.endpoint
     remote_data   = var.data_layer_remote
