@@ -1,0 +1,178 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "EC2DescribeByRegion",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeInstanceTypeOfferings",
+                "ec2:DescribeImages",
+                "ec2:DescribeAvailabilityZones",
+                "ec2:DescribeVpcs",
+                "ec2:DescribeAddresses",
+                "ec2:DescribeAddressesAttribute",
+                "ec2:DescribeInternetGateways",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSecurityGroupRules",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DescribeRouteTables",
+                "ec2:DescribeNatGateways",
+                "ec2:DescribeVpcEndpoints",
+                "ec2:DescribePrefixLists",
+                "ec2:DescribeLaunchTemplates",
+                "ec2:DescribeLaunchTemplateVersions",
+                "ec2:DescribeInstances",
+                "ec2:DescribeInstanceTypes",
+                "ec2:DescribeTags",
+                "ec2:DescribeVolumes",
+                "ec2:DescribeInstanceAttribute"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringLike": {
+                    "ec2:Region": "{region}"
+                }
+            }
+        },
+        {
+            "Sid": "Tagging",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateTags"
+            ],
+            "Resource": [
+                "arn:aws:ec2:{region}:{account}:vpc/*",
+                "arn:aws:ec2:{region}:{account}:security-group/*",
+                "arn:aws:ec2:{region}:{account}:subnet/*",
+                "arn:aws:ec2:{region}:{account}:instance/*",
+                "arn:aws:ec2:{region}:{account}:elastic-ip/*",
+                "arn:aws:ec2:{region}:{account}:internet-gateway/*",
+                "arn:aws:ec2:{region}:{account}:route-table/*",
+                "arn:aws:ec2:{region}:{account}:vpc-endpoint/*",
+                "arn:aws:ec2:{region}:{account}:natgateway/*",
+                "arn:aws:ec2:{region}:{account}:launch-template/*",
+                "arn:aws:ec2:{region}:{account}:security-group-rule/*",
+                "arn:aws:ec2:{region}:{account}:volume/*"
+            ]
+        },
+        {
+            "Sid": "E3SServerTagging",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateTags"
+            ],
+            "Resource": [
+                "arn:aws:ec2:{region}:{account}:instance/*"
+            ]
+        },
+        {
+            "Sid": "RemoteStateBucketCheck",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::{state_bucket_name}"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": "arn:aws:s3:::{state_bucket_name}/{state_bucket_key}"
+        },
+        {
+            "Sid": "RemoteStateLock",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:PutItem",
+                "dynamodb:GetItem",
+                "dynamodb:DeleteItem"
+            ],
+            "Resource": "arn:aws:dynamodb:{region}:{account}:table/{dynamodb_table}"
+        },
+        {
+            "Sid": "ELBV2",
+            "Effect": "Allow",
+            "Action": [
+                "elasticloadbalancing:AddTags",
+                "elasticloadbalancing:CreateTargetGroup",
+                "elasticloadbalancing:ModifyTargetGroupAttributes",
+                "elasticloadbalancing:DeleteTargetGroup",
+                "elasticloadbalancing:CreateLoadBalancer",
+                "elasticloadbalancing:ModifyLoadBalancerAttributes",
+                "elasticloadbalancing:DeleteLoadBalancer",
+                "elasticloadbalancing:CreateListener",
+                "elasticloadbalancing:ModifyListener",
+                "elasticloadbalancing:ModifyListenerAttributes",
+                "elasticloadbalancing:DeleteListener"
+            ],
+            "Resource": [
+                "arn:aws:elasticloadbalancing:{region}:{account}:targetgroup/{resource_prefix}-tg/*",
+                "arn:aws:elasticloadbalancing:{region}:{account}:loadbalancer/app/{resource_prefix}-alb/*",
+                "arn:aws:elasticloadbalancing:{region}:{account}:listener/app/{resource_prefix}-alb/*"
+            ]
+        },
+        {
+            "Sid": "RDS",
+            "Effect": "Allow",
+            "Action": [
+                "rds:AddTagsToResource",
+                "rds:ListTagsForResource",
+                "rds:CreateDBSubnetGroup",
+                "rds:DescribeDBSubnetGroups",
+                "rds:DeleteDBSubnetGroup",
+                "rds:CreateDBInstance",
+                "rds:DeleteDBInstance"
+            ],
+            "Resource": [
+                "arn:aws:rds:{region}:{account}:subgrp:{resource_prefix}-rds-subnet",
+                "arn:aws:rds:{region}:{account}:db:{resource_prefix}-postgres*"
+            ]
+        },
+        {
+            "Sid": "ElastiCache",
+            "Effect": "Allow",
+            "Action": [
+                "elasticache:AddTagsToResource",
+                "elasticache:ListTagsForResource",
+                "elasticache:CreateServerlessCache",
+                "elasticache:DescribeServerlessCaches",
+                "elasticache:DeleteServerlessCache"
+            ],
+            "Resource": [
+                "arn:aws:elasticache:{region}:{account}:serverlesscache:{resource_prefix}-redis"
+            ]
+        },
+        {
+            "Sid": "ElastiCacheEC2DependentCreate",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateVpcEndpoint",
+                "ec2:CreateTags"
+            ],
+            "Resource": [
+                "arn:aws:ec2:{region}:{account}:vpc-endpoint/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestTag/AmazonElastiCacheManaged": true
+                }
+            }
+        },
+        {
+            "Sid": "ElastiCacheEC2DependentDelete",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DeleteVpcEndpoints"
+            ],
+            "Resource": [
+                "arn:aws:ec2:{region}:{account}:vpc-endpoint/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "ec2:ResourceTag/AmazonElastiCacheManaged": true
+                }
+            }
+        }
+    ]
+}

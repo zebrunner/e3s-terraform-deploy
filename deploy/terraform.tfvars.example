@@ -1,0 +1,40 @@
+profile = "terraform"
+
+resources_prefix         = "e3s-test"
+region                   = "us-east-1"
+e3s_server_instance_type = "m5n.large"
+
+s3_bucket = {
+  exists = false
+  name   = "e3s-test-assets"
+  region = "us-east-1"
+}
+
+vpc_id         = "vpc-1234"
+vpc_cidr_block = "172.31.0.0/16"
+
+enable_cloudwatch = true
+cert = "arn:aws:acm:us-east-1:1234:certificate/1234"
+
+remote_db = {
+  username = "postgres"
+  pass     = "1234"
+}
+
+instance_types = [
+  {
+    weight        = 1
+    instance_type = "c5a.2xlarge"
+  }
+]
+
+spot_price = {
+  linux   = "1"
+  windows = "1"
+}
+
+zebrunner = {
+  host = "https://zebruner.com"
+  user = "user"
+  pass = "pass"
+}

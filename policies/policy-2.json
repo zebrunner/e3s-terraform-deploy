@@ -5,8 +5,8 @@
             "Sid": "EC2OnResourcesByTags",
             "Effect": "Allow",
             "Action": [
-                "ec2:DeleteKeyPair",
                 "ec2:DescribeVpcAttribute",
+                "ec2:DescribeVpcEndpointServices",
                 "ec2:DeleteVpc",
                 "ec2:ModifyVpcAttribute",
                 "ec2:ModifyVpcEndpoint",
@@ -31,7 +31,6 @@
             ],
             "Resource": [
                 "arn:aws:ec2:{region}:{account}:vpc/*",
-                "arn:aws:ec2:{region}:{account}:key-pair/e3s-{env}-agent",
                 "arn:aws:ec2:{region}:{account}:security-group/*",
                 "arn:aws:ec2:{region}:{account}:subnet/*",
                 "arn:aws:ec2:{region}:{account}:elastic-ip/*",
@@ -40,13 +39,7 @@
                 "arn:aws:ec2:{region}:{account}:vpc-endpoint/*",
                 "arn:aws:ec2:{region}:{account}:natgateway/*",
                 "arn:aws:ec2:{region}:{account}:launch-template/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "ec2:ResourceTag/Name": "e3s",
-                    "ec2:ResourceTag/Environment": "{env}"
-                }
-            }
+            ]
         },
         {
             "Sid": "DisassociateAddress",
@@ -62,37 +55,23 @@
             "Action": [
                 "ec2:TerminateInstances"
             ],
-            "Resource": "arn:aws:ec2:{region}:{account}:instance/*",
-            "Condition": {
-                "StringEquals": {
-                    "ec2:ResourceTag/Name": "e3s-{env}",
-                    "ec2:ResourceTag/Environment": "{env}"
-                }
-            }
+            "Resource": "arn:aws:ec2:{region}:{account}:instance/*"
         },
         {
             "Sid": "EC2CreateWithTag",
             "Effect": "Allow",
             "Action": [
-                "ec2:ImportKeyPair",
                 "ec2:CreateVpc",
                 "ec2:AllocateAddress",
                 "ec2:CreateInternetGateway",
                 "ec2:CreateLaunchTemplate"
             ],
             "Resource": [
-                "arn:aws:ec2:{region}:{account}:key-pair/e3s-{env}-agent",
                 "arn:aws:ec2:{region}:{account}:vpc/*",
                 "arn:aws:ec2:{region}:{account}:elastic-ip/*",
                 "arn:aws:ec2:{region}:{account}:internet-gateway/*",
                 "arn:aws:ec2:{region}:{account}:launch-template/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "aws:RequestTag/Name": "e3s",
-                    "aws:RequestTag/Environment": "{env}"
-                }
-            }
+            ]
         },
         {
             "Sid": "EC2VpcWithTag",
@@ -105,15 +84,10 @@
             ],
             "Resource": [
                 "arn:aws:ec2:{region}:{account}:security-group/*",
+                "arn:aws:ec2:{region}:{account}:security-group-rule/*",
                 "arn:aws:ec2:{region}:{account}:subnet/*",
                 "arn:aws:ec2:{region}:{account}:route-table/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "aws:RequestTag/Name": "e3s",
-                    "aws:RequestTag/Environment": "{env}"
-                }
-            }
+            ]
         },
         {
             "Sid": "EC2VpcByTag",
@@ -125,13 +99,7 @@
             ],
             "Resource": [
                 "arn:aws:ec2:{region}:{account}:vpc/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "ec2:ResourceTag/Name": "e3s",
-                    "ec2:ResourceTag/Environment": "{env}"
-                }
-            }
+            ]
         },
         {
             "Sid": "SGRuleWithTag",
@@ -142,13 +110,7 @@
             ],
             "Resource": [
                 "arn:aws:ec2:{region}:{account}:security-group-rule/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "ec2:RequestTag/Name": "e3s",
-                    "ec2:RequestTag/Environment": "{env}"
-                }
-            }
+            ]
         },
         {
             "Sid": "SGRuleByTag",
@@ -159,13 +121,7 @@
             ],
             "Resource": [
                 "arn:aws:ec2:{region}:{account}:security-group/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "ec2:ResourceTag/Name": "e3s",
-                    "ec2:ResourceTag/Environment": "{env}"
-                }
-            }
+            ]
         },
         {
             "Sid": "Nat",
@@ -186,13 +142,7 @@
             "Resource": [
                 "arn:aws:ec2:{region}:{account}:subnet/*",
                 "arn:aws:ec2:{region}:{account}:elastic-ip/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "ec2:ResourceTag/Name": "e3s",
-                    "ec2:ResourceTag/Environment": "{env}"
-                }
-            }
+            ]
         },
         {
             "Sid": "VpcEndpointWithTags",
@@ -202,13 +152,7 @@
             ],
             "Resource": [
                 "arn:aws:ec2:{region}:{account}:vpc-endpoint/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "aws:RequestTag/Name": "e3s",
-                    "aws:RequestTag/Environment": "{env}"
-                }
-            }
+            ]
         },
         {
             "Sid": "VpcEndpointByTags",
@@ -221,22 +165,6 @@
                 "arn:aws:ec2:{region}:{account}:subnet/*",
                 "arn:aws:ec2:{region}:{account}:route-table/*",
                 "arn:aws:ec2:{region}:{account}:security-group/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "ec2:ResourceTag/Name": "e3s",
-                    "ec2:ResourceTag/Environment": "{env}"
-                }
-            }
-        },
-        {
-            "Sid": "E3SKeyPar",
-            "Effect": "Allow",
-            "Action": [
-                "ec2:ImportKeyPair"
-            ],
-            "Resource": [
-                "arn:aws:ec2:{region}:{account}:key-pair/{e3s-key-name}"
             ]
         },
         {
@@ -249,9 +177,7 @@
                 "arn:aws:ec2:{region}::image/*",
                 "arn:aws:ec2:{region}:{account}:instance/*",
                 "arn:aws:ec2:{region}:{account}:volume/*",
-                "arn:aws:ec2:{region}:{account}:network-interface/*",
-                "arn:aws:ec2:{region}:{account}:key-pair/{e3s-key-name}",
-                "arn:aws:ec2:{region}:{account}:key-pair/e3s-{env}-agent"
+                "arn:aws:ec2:{region}:{account}:network-interface/*"
             ]
         },
         {
@@ -264,13 +190,7 @@
                 "arn:aws:ec2:{region}:{account}:security-group/*",
                 "arn:aws:ec2:{region}:{account}:subnet/*",
                 "arn:aws:ec2:{region}:{account}:launch-template/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "ec2:ResourceTag/Name": "e3s",
-                    "ec2:ResourceTag/Environment": "{env}"
-                }
-            }
+            ]
         }
     ]
 }

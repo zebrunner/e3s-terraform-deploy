@@ -1,3 +1,16 @@
+data "aws_subnets" "autoscaling_group" {
+  filter {
+    name   = "vpc-id"
+    values = [var.vpc_id]
+  }
+  filter {
+    name   = "map-public-ip-on-launch"
+    values = ["false"]
+  }
+}
+
+########################################################################################################################
+
 resource "aws_autoscaling_group" "linux" {
   name = local.e3s_linux_autoscaling_name
   mixed_instances_policy {
@@ -26,8 +39,8 @@ resource "aws_autoscaling_group" "linux" {
     }
   }
 
-  desired_capacity = 0
-  min_size         = 0
+  desired_capacity = 1
+  min_size         = 1
   max_size         = 50
 
   default_cooldown = 10
@@ -35,7 +48,7 @@ resource "aws_autoscaling_group" "linux" {
   health_check_type         = "EC2"
   health_check_grace_period = 10
 
-  vpc_zone_identifier = length(aws_subnet.private_per_zone) != 0 ? [for s in aws_subnet.private_per_zone : s.id] : [for s in aws_subnet.public_per_zone : s.id] 
+  vpc_zone_identifier = data.aws_subnets.autoscaling_group.ids
 
   termination_policies  = ["AllocationStrategy"]
   protect_from_scale_in = true
@@ -46,8 +59,6 @@ resource "aws_autoscaling_group" "linux" {
   lifecycle {
     ignore_changes = [desired_capacity, min_size, max_size, tag]
   }
-
-  depends_on = [aws_subnet.private_per_zone, aws_subnet.public_per_zone]
 }
 
 resource "aws_autoscaling_group" "windows" {
@@ -87,7 +98,7 @@ resource "aws_autoscaling_group" "windows" {
   health_check_type         = "EC2"
   health_check_grace_period = 10
 
-  vpc_zone_identifier = length(aws_subnet.private_per_zone) != 0 ? [for s in aws_subnet.private_per_zone : s.id] : [for s in aws_subnet.public_per_zone : s.id] 
+  vpc_zone_identifier = data.aws_subnets.autoscaling_group.ids
 
   termination_policies  = ["AllocationStrategy"]
   protect_from_scale_in = true
@@ -95,11 +106,15 @@ resource "aws_autoscaling_group" "windows" {
   force_delete            = true
   service_linked_role_arn = format("arn:aws:iam::%s:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling", data.aws_caller_identity.current.account_id)
 
+  tag {
+    key                 = "Name"
+    propagate_at_launch = false
+    value               = local.e3s_agent_instance_name
+  }
+
   lifecycle {
     ignore_changes = [desired_capacity, min_size, max_size, tag]
   }
-
-  depends_on = [aws_subnet.private_per_zone, aws_subnet.public_per_zone]
 }
 
 resource "aws_autoscaling_policy" "linux_forecast" {

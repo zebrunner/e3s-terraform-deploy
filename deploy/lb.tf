@@ -1,6 +1,19 @@
+data "aws_subnets" "lb" {
+  filter {
+    name   = "vpc-id"
+    values = [var.vpc_id]
+  }
+  filter {
+    name   = "map-public-ip-on-launch"
+    values = ["true"]
+  }
+}
+
+########################################################################################################################
+
 resource "aws_lb_target_group" "main" {
   name             = local.e3s_tg_name
-  vpc_id           = aws_vpc.main.id
+  vpc_id           = var.vpc_id
   protocol         = "HTTP"
   protocol_version = "HTTP1"
   port             = 4444
@@ -13,8 +26,8 @@ resource "aws_lb_target_group" "main" {
     path                = "/"
     interval            = 30
     timeout             = 5
-    healthy_threshold   = 5
-    unhealthy_threshold = 5
+    healthy_threshold   = 3
+    unhealthy_threshold = 3
     matcher             = 200
   }
 
@@ -23,7 +36,7 @@ resource "aws_lb_target_group" "main" {
 
 resource "aws_lb" "main" {
   name               = local.e3s_alb_name
-  subnets            = [for subnet in aws_subnet.public_per_zone : subnet.id]
+  subnets            = data.aws_subnets.lb.ids
   security_groups    = [aws_security_group.e3s_server.id]
   load_balancer_type = "application"
   ip_address_type    = "ipv4"

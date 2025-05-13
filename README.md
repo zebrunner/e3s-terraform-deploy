@@ -32,28 +32,14 @@ Windows based ECS optimized instance with embedded Zebrunner tuning for scalable
 
 Configured aws profile with the following policies:
 
-1. In [terraform-policy.json](policies/terraform-policy.json) should be replaced the next placeholders:
-    * `{env}` - Prefix for almost all e3s aws resources
+1. In [policy-1.json](policies/policy-1.json), [policy-2.json](policies/policy-2.json), [policy-3.json](policies/policy-3.json) replace the following placeholders:
+    * `{resource_prefix}` - Prefix for almost all e3s aws resources
     * `{region}` - Aws region in which all e3s resources will be deployed
     * `{account}` - Aws account id
     * `{bucket_name}` - Name of a bucket that will store assets (videos, logs, etc.) created by e3s
     * `{state_bucket_name}` - Bucket to save terraform state
     * `{state_bucket_key}` - Key of the state file stored in `{state_bucket_name}`
     * `{dynamodb_table}` - Dynamodb table name, which will support terraform lock mechanism
-    * `{dynamodb_region}` - Region of the `{dynamodb_table}`
-
-2. In [terraform-ec2-view-policy.json](policies/terraform-ec2-view-policy.json) should be replaced the next
-   placeholders:
-    * `{env}` - Prefix for almost all e3s aws resources
-    * `{region}` - Aws region in which all e3s resources will be deployed
-    * `{account}` - Aws account id
-
-3. In [terraform-ec2-deploy-policy.json](policies/terraform-ec2-deploy-policy.json) should be replaced the next
-   placeholders:
-    * `{env}` - Prefix for almost all e3s aws resources
-    * `{region}` - Aws region in which all e3s resources will be deployed
-    * `{account}` - Aws account id
-    * `{e3s-key-name}` - Key pair name to attach to e3s-server instance
 
 ## Deploy steps
 

@@ -32,11 +32,11 @@
                 "ecs:UpdateContainerInstancesState"
             ],
             "Resource": [
-                "arn:aws:ecs:${region}:${account}:container-instance/e3s-${env}/*",
-                "arn:aws:ecs:${region}:${account}:task/e3s-${env}/*",
-                "arn:aws:ecs:${region}:${account}:cluster/e3s-${env}",
+                "arn:aws:ecs:${region}:${account}:container-instance/${env}-cluster/*",
+                "arn:aws:ecs:${region}:${account}:task/${env}-cluster/*",
+                "arn:aws:ecs:${region}:${account}:cluster/${env}-cluster",
                 "arn:aws:ecs:${region}:${account}:task-definition/${env}-*",
-                "arn:aws:ecs:${region}:${account}:capacity-provider/e3s-${env}-*"
+                "arn:aws:ecs:${region}:${account}:capacity-provider/${env}-*"
             ]
         },
         {
@@ -47,7 +47,7 @@
                 "autoscaling:SetInstanceProtection",
                 "autoscaling:SetDesiredCapacity"
             ],
-            "Resource": "arn:aws:autoscaling:${region}:${account}:autoScalingGroup:*:autoScalingGroupName/e3s-${env}-*"
+            "Resource": "arn:aws:autoscaling:${region}:${account}:autoScalingGroup:*:autoScalingGroupName/${env}-*"
         },
         {
             "Sid": "ELB",
@@ -56,7 +56,7 @@
                 "elasticloadbalancing:RegisterTargets",
                 "elasticloadbalancing:DeregisterTargets"
             ],
-            "Resource": "arn:aws:elasticloadbalancing:${region}:${account}:targetgroup/e3s-${env}-*"
+            "Resource": "arn:aws:elasticloadbalancing:${region}:${account}:targetgroup/${env}-*"
         },
         {
             "Sid": "S3",
@@ -76,7 +76,17 @@
             "Action": [
                 "iam:passRole"
             ],
-            "Resource": "arn:aws:iam::${account}:role/e3s-${env}-task-role"
+            "Resource": "arn:aws:iam::${account}:role/${env}-task-role"
+        },
+        {
+            "Action": [
+                "secretsmanager:GetSecretValue"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:secretsmanager:${region}:${account}:secret:${lacework_secret_name}*"
+            ],
+            "Sid": "SecretsManager"
         }
     ]
 }

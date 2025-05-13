@@ -27,9 +27,19 @@
                 "ecs:Poll"
             ],
             "Resource": [
-                "arn:aws:ecs:${region}:${accout}:cluster/e3s-${env}",
-                "arn:aws:ecs:${region}:${accout}:container-instance/e3s-${env}/*"
+                "arn:aws:ecs:${region}:${account}:cluster/${env}-cluster",
+                "arn:aws:ecs:${region}:${account}:container-instance/${env}-cluster/*"
             ]
+        },
+        {
+            "Action": [
+                "secretsmanager:GetSecretValue"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:secretsmanager:${region}:${account}:secret:${lacework_secret_name}*"
+            ],
+            "Sid": "SecretsManager"
         }
     ]
 }

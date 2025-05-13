@@ -2,7 +2,7 @@
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "Allow-put-only-for-specific-vpc_endoint",
+            "Sid": "Allow-put-only-for-specific-vpc_endpoint",
             "Principal": "*",
             "Effect": "Deny",
             "Action": [

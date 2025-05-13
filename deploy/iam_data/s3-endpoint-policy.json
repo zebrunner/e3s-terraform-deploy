@@ -22,7 +22,8 @@
             "Resource": [
                 "arn:aws:s3:::repo.${region}.amazonaws.com",
                 "arn:aws:s3:::repo.${region}.amazonaws.com/*",
-                "arn:aws:s3:::amazonlinux-2-repos-${region}/*"
+                "arn:aws:s3:::amazonlinux-2-repos-${region}/*",
+                "arn:aws:s3:::al2023-repos-${region}-*"
             ]
         }
     ]

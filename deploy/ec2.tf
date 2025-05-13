@@ -3,9 +3,8 @@ data "aws_ami" "zbr_linux" {
   owners      = ["aws-marketplace"]
   filter {
     name   = "name"
-    values = ["Zebrunner ESG Agent *"]
+    values = ["Zebrunner-ESG-Agent-*"]
   }
-
   filter {
     name   = "block-device-mapping.device-name"
     values = ["/dev/xvda"]
@@ -19,19 +18,19 @@ data "aws_ami" "zbr_windows" {
     name   = "name"
     values = ["Zebrunner ESG Agent *"]
   }
-
   filter {
     name   = "platform"
     values = ["windows"]
   }
 }
 
+########################################################################################################################
+
 resource "aws_launch_template" "e3s_linux" {
   name                   = local.e3s_linux_launch_template_name
   image_id               = data.aws_ami.zbr_linux.id
   vpc_security_group_ids = [aws_security_group.e3s_agent.id]
   ebs_optimized          = true
-  key_name               = var.agent_key_pair.generate ? aws_key_pair.agent[0].key_name : ""
 
   instance_initiated_shutdown_behavior = "terminate"
 
@@ -69,7 +68,14 @@ resource "aws_launch_template" "e3s_linux" {
 
   disable_api_termination = false
 
-  user_data = base64encode(templatefile("./ec2_data/linux_user_data.sh", { cluster_name = local.e3s_cluster_name }))
+  user_data = base64encode(templatefile(
+    "./ec2_data/linux_user_data.sh",
+    {
+      cluster_name         = local.e3s_cluster_name
+      region               = var.region
+      lacework_secret_name = var.lacework_secret_name
+    }
+  ))
 
   depends_on = [aws_iam_instance_profile.e3s_agent]
 }
@@ -77,8 +83,7 @@ resource "aws_launch_template" "e3s_linux" {
 resource "aws_launch_template" "e3s_windows" {
   name                   = local.e3s_windows_launch_template_name
   image_id               = data.aws_ami.zbr_windows.id
-  vpc_security_group_ids = var.agent_key_pair.generate ? [aws_security_group.e3s_agent.id, aws_security_group.windows_rdp[0].id] : [aws_security_group.e3s_agent.id]
-  key_name               = var.agent_key_pair.generate ? aws_key_pair.agent[0].key_name : ""
+  vpc_security_group_ids = [aws_security_group.e3s_agent.id]
 
   ebs_optimized = true
   block_device_mappings {
@@ -112,7 +117,10 @@ resource "aws_launch_template" "e3s_windows" {
     name = aws_iam_instance_profile.e3s_agent.name
   }
 
-  user_data = base64encode(templatefile("./ec2_data/windows_user_data.ps1", { cluster_name = local.e3s_cluster_name, cidr_block = aws_vpc.main.cidr_block }))
+  user_data = base64encode(templatefile(
+    "./ec2_data/windows_user_data.ps1",
+    { cluster_name = local.e3s_cluster_name, cidr_block = var.vpc_cidr_block }
+  ))
 
   depends_on = [aws_iam_instance_profile.e3s_agent]
 }

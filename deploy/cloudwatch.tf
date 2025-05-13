@@ -1,8 +1,21 @@
-resource "aws_vpc_endpoint" "cloudwatch" {
-  count = var.enable_cloudwatch && var.nat ? 1 : 0
+data "aws_subnets" "cloudwatch" {
+  filter {
+    name   = "vpc-id"
+    values = [var.vpc_id]
+  }
+  filter {
+    name   = "map-public-ip-on-launch"
+    values = ["false"]
+  }
+}
 
-  vpc_id     = aws_vpc.main.id
-  subnet_ids = [for s in aws_subnet.private_per_zone : s.id]
+########################################################################################################################
+
+resource "aws_vpc_endpoint" "cloudwatch" {
+  count = var.enable_cloudwatch ? 1 : 0
+
+  vpc_id     = var.vpc_id
+  subnet_ids = data.aws_subnets.cloudwatch.ids
 
   service_name       = format("com.amazonaws.%s.logs", var.region)
   vpc_endpoint_type  = "Interface"

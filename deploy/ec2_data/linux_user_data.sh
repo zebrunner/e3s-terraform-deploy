@@ -17,3 +17,19 @@ echo ECS_PULL_DEPENDENT_CONTAINERS_UPFRONT=true >> /etc/ecs/ecs.config
 
 #ECS_IMAGE_PULL_BEHAVIOR <default | always | once | prefer-cached >
 echo ECS_IMAGE_PULL_BEHAVIOR=prefer-cached >> /etc/ecs/ecs.config
+
+sudo yum install -y awscli
+export LACEWORK_TOKEN=$(
+  aws secretsmanager get-secret-value \
+    --secret-id "${lacework_secret_name}" \
+    --region "${region}" \
+    --query SecretString \
+    --output text
+)
+
+curl -sSL https://packages.lacework.net/install.sh -o /tmp/install.sh
+chmod +x /tmp/install.sh
+
+sudo /tmp/install.sh  "$LACEWORK_TOKEN"  -V latest
+sudo systemctl enable datacollector
+sudo systemctl start  datacollector

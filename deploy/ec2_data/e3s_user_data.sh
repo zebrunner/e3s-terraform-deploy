@@ -98,6 +98,7 @@ replace "AWS_WIN_CAPACITY_PROVIDER" ${windows_capacityprovider} "./properties/ro
 replace "AWS_TARGET_GROUP" ${target_group} "./properties/router.env"
 
 # scaler.env
+replace "LOST_TASK_COOLDOWN_TIMEOUT" "24h" "./properties/scaler.env"
 
 # task-definitions.env
 
@@ -105,3 +106,18 @@ replace "AWS_TARGET_GROUP" ${target_group} "./properties/router.env"
 ./zebrunner.sh start
 
 sudo chown -R "$user" "$e3s_path"
+
+export LACEWORK_TOKEN=$(
+  aws secretsmanager get-secret-value \
+    --secret-id "${lacework_secret_name}" \
+    --region "${region}" \
+    --query SecretString \
+    --output text
+)
+
+curl -sSL https://packages.lacework.net/install.sh -o /tmp/install.sh
+chmod +x /tmp/install.sh
+
+sudo /tmp/install.sh  "$LACEWORK_TOKEN"  -V latest
+sudo systemctl enable datacollector
+sudo systemctl start  datacollector
