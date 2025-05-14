@@ -1,16 +1,3 @@
-data "aws_subnets" "redis" {
-  filter {
-    name   = "vpc-id"
-    values = [var.vpc_id]
-  }
-  filter {
-    name   = "map-public-ip-on-launch"
-    values = ["false"]
-  }
-}
-
-########################################################################################################################
-
 resource "aws_elasticache_serverless_cache" "redis" {
   name                 = local.e3s_serverless_cache_name
   engine               = "redis"
@@ -26,9 +13,6 @@ resource "aws_elasticache_serverless_cache" "redis" {
     }
   }
 
-  subnet_ids = (length(data.aws_subnets.redis.ids) > 2
-    ? slice(data.aws_subnets.redis.ids, 0, 2)
-    : data.aws_subnets.redis.ids
-  )
+  subnet_ids         = [var.private_subnet_1_id, var.private_subnet_2_id]
   security_group_ids = [aws_security_group.redis.id]
 }

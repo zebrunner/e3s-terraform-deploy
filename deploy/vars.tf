@@ -26,6 +26,22 @@ variable "vpc_cidr_block" {
   type     = string
   nullable = false
 }
+variable "public_subnet_1_id" {
+  type     = string
+  nullable = false
+}
+variable "public_subnet_2_id" {
+  type     = string
+  nullable = false
+}
+variable "private_subnet_1_id" {
+  type     = string
+  nullable = false
+}
+variable "private_subnet_2_id" {
+  type     = string
+  nullable = false
+}
 
 variable "lacework_secret_name" {
   type     = string

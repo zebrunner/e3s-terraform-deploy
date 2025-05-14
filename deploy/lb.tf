@@ -1,16 +1,3 @@
-data "aws_subnets" "lb" {
-  filter {
-    name   = "vpc-id"
-    values = [var.vpc_id]
-  }
-  filter {
-    name   = "map-public-ip-on-launch"
-    values = ["true"]
-  }
-}
-
-########################################################################################################################
-
 resource "aws_lb_target_group" "main" {
   name             = local.e3s_tg_name
   vpc_id           = var.vpc_id
@@ -36,7 +23,7 @@ resource "aws_lb_target_group" "main" {
 
 resource "aws_lb" "main" {
   name               = local.e3s_alb_name
-  subnets            = data.aws_subnets.lb.ids
+  subnets            = [var.public_subnet_1_id, var.public_subnet_2_id]
   security_groups    = [aws_security_group.e3s_server.id]
   load_balancer_type = "application"
   ip_address_type    = "ipv4"

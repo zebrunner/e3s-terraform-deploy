@@ -1,16 +1,3 @@
-data "aws_subnets" "autoscaling_group" {
-  filter {
-    name   = "vpc-id"
-    values = [var.vpc_id]
-  }
-  filter {
-    name   = "map-public-ip-on-launch"
-    values = ["false"]
-  }
-}
-
-########################################################################################################################
-
 resource "aws_autoscaling_group" "linux" {
   name = local.e3s_linux_autoscaling_name
   mixed_instances_policy {
@@ -48,7 +35,7 @@ resource "aws_autoscaling_group" "linux" {
   health_check_type         = "EC2"
   health_check_grace_period = 10
 
-  vpc_zone_identifier = data.aws_subnets.autoscaling_group.ids
+  vpc_zone_identifier = [var.private_subnet_1_id, var.private_subnet_2_id]
 
   termination_policies  = ["AllocationStrategy"]
   protect_from_scale_in = true
@@ -98,7 +85,7 @@ resource "aws_autoscaling_group" "windows" {
   health_check_type         = "EC2"
   health_check_grace_period = 10
 
-  vpc_zone_identifier = data.aws_subnets.autoscaling_group.ids
+  vpc_zone_identifier = [var.private_subnet_1_id, var.private_subnet_2_id]
 
   termination_policies  = ["AllocationStrategy"]
   protect_from_scale_in = true

@@ -30,17 +30,6 @@ data "aws_ami" "ubuntu_22_04" {
   }
 }
 
-data "aws_subnets" "e3s" {
-  filter {
-    name   = "vpc-id"
-    values = [var.vpc_id]
-  }
-  filter {
-    name   = "map-public-ip-on-launch"
-    values = ["false"]
-  }
-}
-
 ########################################################################################################################
 
 resource "aws_instance" "e3s_server" {
@@ -49,7 +38,7 @@ resource "aws_instance" "e3s_server" {
   iam_instance_profile = aws_iam_instance_profile.e3s.name
 
   vpc_security_group_ids = [aws_security_group.e3s_server.id]
-  subnet_id              = data.aws_subnets.e3s.ids[0]
+  subnet_id              = var.private_subnet_1_id
 
   cpu_options {
     core_count       = 1

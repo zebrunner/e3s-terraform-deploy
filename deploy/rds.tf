@@ -1,14 +1,3 @@
-data "aws_subnets" "rds" {
-  filter {
-    name   = "vpc-id"
-    values = [var.vpc_id]
-  }
-  filter {
-    name   = "map-public-ip-on-launch"
-    values = ["false"]
-  }
-}
-
 data "aws_rds_engine_version" "postgres" {
   engine       = "postgres"
   version      = "13"
@@ -20,7 +9,7 @@ data "aws_rds_engine_version" "postgres" {
 resource "aws_db_subnet_group" "rds" {
   name        = local.e3s_rds_subnet_name
   description = "RDS subnet group"
-  subnet_ids  = data.aws_subnets.rds.ids
+  subnet_ids  = [var.private_subnet_1_id]
 }
 
 resource "aws_db_instance" "postgres" {
