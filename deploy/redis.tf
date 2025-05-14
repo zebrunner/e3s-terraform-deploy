@@ -26,6 +26,9 @@ resource "aws_elasticache_serverless_cache" "redis" {
     }
   }
 
-  subnet_ids         = data.aws_subnets.redis.ids
+  subnet_ids = (length(data.aws_subnets.redis.ids) > 2
+    ? slice(data.aws_subnets.redis.ids, 0, 2)
+    : data.aws_subnets.redis.ids
+  )
   security_group_ids = [aws_security_group.redis.id]
 }
