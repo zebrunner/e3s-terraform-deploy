@@ -9,7 +9,7 @@ data "aws_rds_engine_version" "postgres" {
 resource "aws_db_subnet_group" "rds" {
   name        = local.e3s_rds_subnet_name
   description = "RDS subnet group"
-  subnet_ids  = [var.private_subnet_1_id]
+  subnet_ids  = [var.private_subnet_1_id, var.private_subnet_2_id]
 }
 
 resource "aws_db_instance" "postgres" {

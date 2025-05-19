@@ -35,7 +35,7 @@ data "aws_ami" "ubuntu_22_04" {
 resource "aws_instance" "e3s_server" {
   ami                  = data.aws_ami.ubuntu_22_04.id
   instance_type        = var.e3s_server_instance_type
-  iam_instance_profile = aws_iam_instance_profile.e3s.name
+  iam_instance_profile = aws_iam_instance_profile.e3s_server.name
 
   vpc_security_group_ids = [aws_security_group.e3s_server.id]
   subnet_id              = var.private_subnet_1_id
@@ -81,9 +81,6 @@ resource "aws_instance" "e3s_server" {
     zbr_host = var.zebrunner.host
     zbr_user = var.zebrunner.user
     zbr_pass = var.zebrunner.pass
-
-    agent_key = ""
-    agent_key_name = local.e3s_agent_key_pair_name
 
     # db_dns      = aws_rds_cluster.aurora.endpoint
     remote_data   = true

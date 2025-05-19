@@ -8,12 +8,11 @@ terraform {
 
   backend "s3" {}
 
-  required_version = "~> 1.11.0"
+  required_version = "~> 1.12.0"
 }
 
 provider "aws" {
   region  = var.region
-  profile = var.profile
   default_tags {
     tags = {
       Environment = var.resources_prefix

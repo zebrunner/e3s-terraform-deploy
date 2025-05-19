@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "ecs_assume_role_policy" {
   }
 }
 
-data "aws_iam_policy_document" "instance_assume_role_policy" {
+data "aws_iam_policy_document" "ec2_assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -22,11 +22,41 @@ data "aws_iam_policy_document" "instance_assume_role_policy" {
   }
 }
 
+data "aws_iam_policy_document" "codebuild_assume_role_policy" {
+  count = var.automatic_update_enabled ? 1 : 0
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["codebuild.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "event_bridge_assume_role_policy" {
+  count = var.automatic_update_enabled ? 1 : 0
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["events.amazonaws.com"]
+    }
+  }
+}
+
 ########################################################################################################################
 
-resource "aws_iam_policy" "e3s" {
-  name   = local.e3s_policy_name
-  policy = templatefile("./iam_data/e3s-server-policy.json", {
+resource "aws_iam_role" "e3s_server" {
+  name               = local.e3s_server_role_name
+  assume_role_policy = data.aws_iam_policy_document.ec2_assume_role_policy.json
+}
+
+resource "aws_iam_role_policy" "e3s_server" {
+  name   = local.e3s_server_policy_name
+  role   = aws_iam_role.e3s_server.id
+  policy = templatefile("./iam_data/server-policy.json", {
     bucket_name          = var.s3_bucket.name
     env                  = var.resources_prefix
     account              = data.aws_caller_identity.current.account_id
@@ -35,9 +65,27 @@ resource "aws_iam_policy" "e3s" {
   })
 }
 
-resource "aws_iam_policy" "e3s_agent" {
+resource "aws_iam_role_policy_attachment" "e3s_server_ssm" {
+  role       = aws_iam_role.e3s_server.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_instance_profile" "e3s_server" {
+  name = local.e3s_server_role_name
+  role = aws_iam_role.e3s_server.name
+}
+
+########################################################################################################################
+
+resource "aws_iam_role" "e3s_agent" {
+  name               = local.e3s_agent_role_name
+  assume_role_policy = data.aws_iam_policy_document.ec2_assume_role_policy.json
+}
+
+resource "aws_iam_role_policy" "e3s_agent" {
   name   = local.e3s_agent_policy_name
-  policy = templatefile("./iam_data/e3s-agent-policy.json", {
+  role   = aws_iam_role.e3s_agent.id
+  policy = templatefile("./iam_data/agent-policy.json", {
     env                  = var.resources_prefix
     account              = data.aws_caller_identity.current.account_id
     region               = var.region
@@ -45,65 +93,91 @@ resource "aws_iam_policy" "e3s_agent" {
   })
 }
 
-resource "aws_iam_policy" "e3s_task" {
+resource "aws_iam_role_policy_attachment" "e3s_agent_ssm" {
+  role       = aws_iam_role.e3s_agent.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_instance_profile" "e3s_agent" {
+  name = local.e3s_agent_role_name
+  role = aws_iam_role.e3s_agent.name
+}
+
+########################################################################################################################
+
+resource "aws_iam_role" "e3s_task" {
+  name               = local.e3s_task_role_name
+  assume_role_policy = data.aws_iam_policy_document.ecs_assume_role_policy.json
+}
+
+resource "aws_iam_role_policy" "e3s_task" {
   name   = local.e3s_task_policy_name
-  policy = templatefile("./iam_data/e3s-task-policy.json", {
+  role   = aws_iam_role.e3s_task.id
+  policy = templatefile("./iam_data/task-policy.json", {
     bucket_name = var.s3_bucket.name
   })
 }
 
 ########################################################################################################################
 
-resource "aws_iam_role" "e3s_task" {
-  name                = local.e3s_task_role_name
-  assume_role_policy  = data.aws_iam_policy_document.ecs_assume_role_policy.json
+resource "aws_iam_role" "codebuild" {
+  count              = var.automatic_update_enabled ? 1 : 0
+  name               = local.e3s_codebuild_role_name
+  assume_role_policy = data.aws_iam_policy_document.codebuild_assume_role_policy[0].json
 }
 
-resource "aws_iam_role" "e3s" {
-  name                = local.e3s_role_name
-  assume_role_policy  = data.aws_iam_policy_document.instance_assume_role_policy.json
+resource "aws_iam_role_policy" "codebuild" {
+  count  = var.automatic_update_enabled ? 1 : 0
+  name   = local.e3s_codebuild_policy_name
+  role   = aws_iam_role.codebuild[0].id
+  policy = templatefile(
+    "./iam_data/codebuild-policy.json",
+    {
+      account                       = data.aws_caller_identity.current.account_id
+      region                        = var.region
+      config_s3_tfbackend_secret_id = var.automatic_update_config_s3_tfbackend_secret_name
+      terraform_tfvars_secret_id    = var.automatic_update_terraform_tfvars_secret_name
+      codebuild_project_name        = local.e3s_codebuild_project_name
+    }
+  )
 }
 
-resource "aws_iam_role" "e3s_agent" {
-  name                = local.e3s_agent_role_name
-  assume_role_policy  = data.aws_iam_policy_document.instance_assume_role_policy.json
+resource "aws_iam_role_policy_attachment" "codebuild_extra_policy_1" {
+  count      = var.automatic_update_enabled ? 1 : 0
+  role       = aws_iam_role.codebuild[0].id
+  policy_arn = var.automatic_update_policy_1_arn
+}
+
+resource "aws_iam_role_policy_attachment" "codebuild_extra_policy_2" {
+  count      = var.automatic_update_enabled ? 1 : 0
+  role       = aws_iam_role.codebuild[0].id
+  policy_arn = var.automatic_update_policy_2_arn
+}
+
+resource "aws_iam_role_policy_attachment" "codebuild_extra_policy_3" {
+  count      = var.automatic_update_enabled ? 1 : 0
+  role       = aws_iam_role.codebuild[0].id
+  policy_arn = var.automatic_update_policy_3_arn
 }
 
 ########################################################################################################################
 
-resource "aws_iam_role_policy_attachment" "e3s_task" {
-  role       = aws_iam_role.e3s_task.name
-  policy_arn = aws_iam_policy.e3s_task.arn
+resource "aws_iam_role" "event_bridge" {
+  count              = var.automatic_update_enabled ? 1 : 0
+  name               = local.e3s_event_bridge_role_name
+  assume_role_policy = data.aws_iam_policy_document.event_bridge_assume_role_policy[0].json
 }
 
-resource "aws_iam_role_policy_attachment" "e3s" {
-  role       = aws_iam_role.e3s.name
-  policy_arn = aws_iam_policy.e3s.arn
-}
-
-resource "aws_iam_role_policy_attachment" "e3s_ssm" {
-  role       = aws_iam_role.e3s.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
-
-resource "aws_iam_role_policy_attachment" "e3s_agent" {
-  role       = aws_iam_role.e3s_agent.name
-  policy_arn = aws_iam_policy.e3s_agent.arn
-}
-
-resource "aws_iam_role_policy_attachment" "e3s_agent_ssm" {
-  role       = aws_iam_role.e3s_agent.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
-
-########################################################################################################################
-
-resource "aws_iam_instance_profile" "e3s" {
-  name = local.e3s_role_name
-  role = aws_iam_role.e3s.name
-}
-
-resource "aws_iam_instance_profile" "e3s_agent" {
-  name = local.e3s_agent_role_name
-  role = aws_iam_role.e3s_agent.name
+resource "aws_iam_role_policy" "event_bridge" {
+  count  = var.automatic_update_enabled ? 1 : 0
+  name   = local.e3s_event_bridge_policy_name
+  role   = aws_iam_role.event_bridge[0].id
+  policy = templatefile(
+    "./iam_data/event-bridge-policy.json",
+    {
+      account                = data.aws_caller_identity.current.account_id
+      region                 = var.region
+      codebuild_project_name = local.e3s_codebuild_project_name
+    }
+  )
 }

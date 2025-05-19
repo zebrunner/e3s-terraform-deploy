@@ -173,6 +173,30 @@
                     "ec2:ResourceTag/AmazonElastiCacheManaged": true
                 }
             }
+        },
+        {
+            "Sid": "SecretsManager",
+            "Effect": "Allow",
+            "Action": [
+                "secretsmanager:DescribeSecret",
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:GetResourcePolicy"
+            ],
+            "Resource": [
+                "arn:aws:secretsmanager:{region}:{account}:secret:{github_token_secret}*"
+            ]
+        },
+        {
+            "Sid": "CodeBuild",
+            "Effect": "Allow",
+            "Action": [
+                "codebuild:CreateProject",
+                "codebuild:DeleteProject",
+                "codebuild:BatchGetProjects"
+            ],
+            "Resource": [
+                "arn:aws:codebuild:{region}:{account}:project/{resource_prefix}-automatic-update"
+            ]
         }
     ]
 }

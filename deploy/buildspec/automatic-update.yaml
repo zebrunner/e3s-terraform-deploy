@@ -1,0 +1,29 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing Terraform…
+      - sudo yum install -y yum-utils
+      - sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+      - sudo yum -y install terraform
+      - terraform version
+  pre_build:
+    commands:
+      - echo Fetching config from Secrets Manager…
+      - cd deploy
+      - aws secretsmanager get-secret-value --secret-id ${config_s3_tfbackend_secret_id} --query SecretString --output text > config.s3.tfbackend
+      - aws secretsmanager get-secret-value --secret-id ${terraform_tfvars_secret_id} --query SecretString --output text > terraform.tfvars
+  build:
+    commands:
+      - echo Initializing Terraform…
+      - terraform init -backend-config="config.s3.tfbackend"
+      - echo Applying…
+      - terraform apply -auto-approve -var-file="terraform.tfvars"
+  post_build:
+    commands:
+      - echo "✅ Terraform apply completed"
+artifacts:
+  files:
+    - "**/*"
+  discard-paths: yes

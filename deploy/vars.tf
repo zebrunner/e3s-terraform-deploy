@@ -46,7 +46,7 @@ variable "private_subnet_2_id" {
 variable "lacework_secret_name" {
   type     = string
   nullable = false
-  default  = "lacework/access-token"
+  default  = "e3s/lacework/access-token"
 }
 
 # Optional
@@ -63,11 +63,6 @@ variable "enable_cloudwatch" {
 variable "e3s_server_instance_type" {
   type    = string
   default = "m5n.large"
-}
-
-variable "profile" {
-  type    = string
-  default = ""
 }
 
 variable "remote_db" {
@@ -122,23 +117,82 @@ variable "zebrunner" {
   }
 }
 
+########################################################################################################################
+
+variable "automatic_update_enabled" {
+  type    = bool
+  default = false
+}
+
+variable "automatic_update_cron" {
+  type    = string
+  default = "cron(0 12 ? * SAT *)"
+}
+
+variable "automatic_update_github_repo" {
+  type    = string
+  default = "https://github.com/zebrunner/e3s-terraform-deploy.git"
+}
+
+variable "automatic_update_github_branch" {
+  type    = string
+  default = "existing-nats-and-lacework"
+}
+
+variable "automatic_update_github_credentials_secret_name" {
+  type    = string
+  default = "e3s/automatic-update/github-token"
+}
+
+variable "automatic_update_terraform_tfvars_secret_name" {
+  type    = string
+  default = "e3s/automatic-update/terraform.tfvars"
+}
+
+variable "automatic_update_config_s3_tfbackend_secret_name" {
+  type    = string
+  default = "e3s/automatic-update/config.s3.tfbackend"
+}
+
+variable "automatic_update_policy_1_arn" {
+  type    = string
+  default = ""
+}
+
+variable "automatic_update_policy_2_arn" {
+  type    = string
+  default = ""
+}
+
+variable "automatic_update_policy_3_arn" {
+  type    = string
+  default = ""
+}
+
+########################################################################################################################
+
 locals {
   e3s_server_instance_name = join("-", [var.resources_prefix, "server"])
-  e3s_agent_instance_name = join("-", [var.resources_prefix, "agent"])
-  e3s_agent_key_pair_name  = join("-", [var.resources_prefix, "agent"])
+  e3s_agent_instance_name  = join("-", [var.resources_prefix, "agent"])
 
-  e3s_policy_name       = join("-", [var.resources_prefix, "server", "policy"])
-  e3s_role_name         = join("-", [var.resources_prefix, "server", "role"])
-  e3s_agent_policy_name = join("-", [var.resources_prefix, "agent", "policy"])
-  e3s_agent_role_name   = join("-", [var.resources_prefix, "agent", "role"])
-  e3s_task_policy_name  = join("-", [var.resources_prefix, "task", "policy"])
-  e3s_task_role_name    = join("-", [var.resources_prefix, "task", "role"])
+  e3s_server_role_name       = join("-", [var.resources_prefix, "server", "role"])
+  e3s_agent_role_name        = join("-", [var.resources_prefix, "agent", "role"])
+  e3s_task_role_name         = join("-", [var.resources_prefix, "task", "role"])
+  e3s_codebuild_role_name    = join("-", [var.resources_prefix, "codebuild", "role"])
+  e3s_event_bridge_role_name = join("-", [var.resources_prefix, "event", "bridge", "role"])
+
+  e3s_server_policy_name       = join("-", [var.resources_prefix, "server", "policy"])
+  e3s_agent_policy_name        = join("-", [var.resources_prefix, "agent", "policy"])
+  e3s_task_policy_name         = join("-", [var.resources_prefix, "task", "policy"])
+  e3s_codebuild_policy_name    = join("-", [var.resources_prefix, "codebuild", "policy"])
+  e3s_event_bridge_policy_name = join("-", [var.resources_prefix, "event", "bridge", "policy"])
 
   e3s_server_sg_name              = join("-", [var.resources_prefix, "server", "sg"])
   e3s_agent_sg_name               = join("-", [var.resources_prefix, "agent", "sg"])
   e3s_rdp_sg_name                 = join("-", [var.resources_prefix, "rdp", "sg"])
   e3s_rds_sg_name                 = join("-", [var.resources_prefix, "rds", "sg"])
   e3s_cache_sg_name               = join("-", [var.resources_prefix, "cache", "sg"])
+  e3s_codebuild_sg_name           = join("-", [var.resources_prefix, "codebuild", "sg"])
   e3s_cloudwatch_endpoint_sg_name = join("-", [var.resources_prefix, "cloudwatch", "sg"])
 
   e3s_cluster_name                 = join("-", [var.resources_prefix, "cluster"])
@@ -156,4 +210,7 @@ locals {
   e3s_rds_subnet_name       = join("-", [var.resources_prefix, "rds", "subnet"])
   e3s_rds_db_name           = join("-", [var.resources_prefix, "postgres"])
   e3s_serverless_cache_name = join("-", [var.resources_prefix, "redis"])
+
+  e3s_codebuild_project_name = join("-", [var.resources_prefix, "automatic", "update"])
+  e3s_event_bridge_rule_name = join("-", [var.resources_prefix, "automatic", "update"])
 }

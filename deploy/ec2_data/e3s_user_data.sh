@@ -44,11 +44,6 @@ git config --system --add safe.directory '*'
 mkdir -p "$e3s_path"
 git clone https://github.com/zebrunner/e3s.git "$e3s_path"
 
-if [ -n "${agent_key}" ]; then
-  echo "${agent_key}" > "$e3s_path"/${agent_key_name}.pem
-  chmod 400 "$e3s_path"/${agent_key_name}.pem
-fi
-
 cd "$e3s_path"
 case ${remote_data} in 
   (true) 

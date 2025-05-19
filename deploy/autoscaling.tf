@@ -26,9 +26,10 @@ resource "aws_autoscaling_group" "linux" {
     }
   }
 
-  desired_capacity = 1
-  min_size         = 1
-  max_size         = 50
+  desired_capacity_type = "units"
+  desired_capacity      = 1
+  min_size              = 1
+  max_size              = 50
 
   default_cooldown = 10
 

@@ -3,7 +3,7 @@ data "aws_ami" "zbr_linux" {
   owners      = ["aws-marketplace"]
   filter {
     name   = "name"
-    values = ["Zebrunner-ESG-Agent-*"]
+    values = ["Zebrunner-ESG-Agent-Light-*"]
   }
   filter {
     name   = "block-device-mapping.device-name"

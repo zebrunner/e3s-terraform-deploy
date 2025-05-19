@@ -1,0 +1,66 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "SecretsManager",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": [
+        "arn:aws:secretsmanager:${region}:${account}:secret:${config_s3_tfbackend_secret_id}*",
+        "arn:aws:secretsmanager:${region}:${account}:secret:${terraform_tfvars_secret_id}*"
+      ]
+    },
+    {
+      "Sid": "Logging",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": [
+        "arn:aws:logs:${region}:${account}:log-group:/aws/codebuild/e3s-automatic-update",
+        "arn:aws:logs:${region}:${account}:log-group:/aws/codebuild/e3s-automatic-update:*"
+      ]
+    },
+    {
+      "Sid": "Networking",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateNetworkInterface",
+        "ec2:DescribeDhcpOptions",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DeleteNetworkInterface",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeVpcs"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Networking2",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateNetworkInterfacePermission"
+      ],
+      "Resource": "arn:aws:ec2:${region}:${account}:network-interface/*",
+      "Condition": {
+        "StringEquals": {
+          "ec2:AuthorizedService": "codebuild.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "CodeBuild",
+      "Effect": "Allow",
+      "Action": [
+        "codebuild:BatchGetProjects"
+      ],
+      "Resource": [
+        "arn:aws:codebuild:${region}:${account}:project/${codebuild_project_name}"
+      ]
+    }
+  ]
+}

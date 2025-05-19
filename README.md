@@ -40,6 +40,7 @@ Configured aws profile with the following policies:
     * `{state_bucket_name}` - Bucket to save terraform state
     * `{state_bucket_key}` - Key of the state file stored in `{state_bucket_name}`
     * `{dynamodb_table}` - Dynamodb table name, which will support terraform lock mechanism
+    * `{github_token_secret}` - Name of the Secret in Secrets Manager that stores GitHub access token to check out this repo
 
 ## Deploy steps
 

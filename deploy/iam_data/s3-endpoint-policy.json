@@ -5,6 +5,19 @@
             "Effect": "Allow",
             "Principal": "*",
             "Action": [
+                "s3:GetBucketPolicy",
+                "s3:GetBucketAcl",
+                "s3:GetBucketCors",
+                "s3:GetBucketWebsite",
+                "s3:GetBucketVersioning",
+                "s3:GetAccelerateConfiguration",
+                "s3:GetBucketRequestPayment",
+                "s3:GetBucketLogging",
+                "s3:GetLifecycleConfiguration",
+                "s3:GetReplicationConfiguration",
+                "s3:GetEncryptionConfiguration",
+                "s3:GetBucketObjectLockConfiguration",
+                "s3:GetBucketTagging",
                 "s3:PutObject",
                 "s3:GetObject",
                 "s3:ListBucket"
@@ -12,6 +25,18 @@
             "Resource": [
                 "arn:aws:s3:::${bucket_name}",
                 "arn:aws:s3:::${bucket_name}/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::e3s-terraform-test-state",
+                "arn:aws:s3:::e3s-terraform-test-state/*"
             ]
         },
         {

@@ -44,6 +44,23 @@
             ]
         },
         {
+            "Sid": "EventBridge",
+            "Effect": "Allow",
+            "Action": [
+                "events:TagResource",
+                "events:DescribeRule",
+                "events:PutRule",
+                "events:DeleteRule",
+                "events:ListTargetsByRule",
+                "events:PutTargets",
+                "events:RemoveTargets",
+                "events:ListTagsForResource"
+            ],
+            "Resource": [
+                "arn:aws:events:{region}:{account}:rule/{resource_prefix}-automatic-update"
+            ]
+        },
+        {
             "Sid": "Autoscaling",
             "Effect": "Allow",
             "Action": [
@@ -66,30 +83,26 @@
                 "iam:TagRole",
                 "iam:TagPolicy",
                 "iam:TagInstanceProfile",
-                "iam:CreatePolicy",
-                "iam:GetPolicy",
-                "iam:ListPolicyVersions",
-                "iam:GetPolicyVersion",
-                "iam:CreatePolicyVersion",
-                "iam:DeletePolicy",
-                "iam:CreateRole",
-                "iam:AttachRolePolicy",
                 "iam:GetRole",
-                "iam:ListRolePolicies",
-                "iam:ListAttachedRolePolicies",
-                "iam:ListInstanceProfilesForRole",
-                "iam:DetachRolePolicy",
+                "iam:CreateRole",
                 "iam:DeleteRole",
-                "iam:CreateInstanceProfile",
+                "iam:ListAttachedRolePolicies",
+                "iam:ListRolePolicies",
+                "iam:GetRolePolicy",
+                "iam:PutRolePolicy",
+                "iam:DeleteRolePolicy",
+                "iam:AttachRolePolicy",
+                "iam:DetachRolePolicy",
+                "iam:ListInstanceProfilesForRole",
                 "iam:GetInstanceProfile",
+                "iam:CreateInstanceProfile",
                 "iam:DeleteInstanceProfile",
                 "iam:AddRoleToInstanceProfile",
                 "iam:RemoveRoleFromInstanceProfile"
             ],
             "Resource": [
-                "arn:aws:iam::{account}:policy/{resource_prefix}-server-policy",
-                "arn:aws:iam::{account}:policy/{resource_prefix}-agent-policy",
-                "arn:aws:iam::{account}:policy/{resource_prefix}-task-policy",
+                "arn:aws:iam::{account}:role/{resource_prefix}-event-bridge-role",
+                "arn:aws:iam::{account}:role/{resource_prefix}-codebuild-role",
                 "arn:aws:iam::{account}:role/{resource_prefix}-server-role",
                 "arn:aws:iam::{account}:role/{resource_prefix}-agent-role",
                 "arn:aws:iam::{account}:role/{resource_prefix}-task-role",
@@ -104,6 +117,8 @@
                 "iam:PassRole"
             ],
             "Resource": [
+                "arn:aws:iam::{account}:role/{resource_prefix}-event-bridge-role",
+                "arn:aws:iam::{account}:role/{resource_prefix}-codebuild-role",
                 "arn:aws:iam::{account}:role/{resource_prefix}-server-role",
                 "arn:aws:iam::{account}:role/{resource_prefix}-agent-role",
                 "arn:aws:iam::{account}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
