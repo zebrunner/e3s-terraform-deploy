@@ -200,7 +200,7 @@ moved {
 
 moved {
   from = aws_vpc_security_group_ingress_rule.e3s_server_router_ports
-  to   = aws_vpc_security_group_ingress_rule.e3s_server_router_ports_from_alb["0.0.0.0/0"]
+  to   = aws_vpc_security_group_ingress_rule.e3s_server_router_ports_direct["0.0.0.0/0"]
 }
 
 moved {
