@@ -4,38 +4,45 @@ resource "aws_security_group" "e3s_server" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "e3s_server_alb" {
+  for_each = toset(var.allowed_cidr_blocks)
+
   security_group_id = aws_security_group.e3s_server.id
   ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
+  cidr_ipv4         = each.value
   from_port         = var.cert == "" ? 80 : 443
   to_port           = var.cert == "" ? 80 : 443
+  description       = "Allow HTTP/HTTPS from allowed IP"
 }
 
-resource "aws_vpc_security_group_ingress_rule" "e3s_server_router_ports" {
+resource "aws_vpc_security_group_ingress_rule" "e3s_server_router_ports_from_alb" {
+  security_group_id            = aws_security_group.e3s_server.id
+  ip_protocol                  = "tcp"
+  referenced_security_group_id = aws_security_group.e3s_server.id
+  from_port                    = 4444
+  to_port                      = 4445
+  description                  = "Allow router ports from ALB (same security group)"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "e3s_server_router_ports_direct" {
+  for_each = toset(var.allowed_cidr_blocks)
+
   security_group_id = aws_security_group.e3s_server.id
   ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
+  cidr_ipv4         = each.value
   from_port         = 4444
   to_port           = 4445
-  description       = "router_ports"
+  description       = "Allow router ports from allowed IP"
 }
 
 resource "aws_vpc_security_group_ingress_rule" "e3s_server_ssh_ipv4" {
-  security_group_id = aws_security_group.e3s_server.id
-  ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 22
-  to_port           = 22
-  description       = "ssh"
-}
+  for_each = toset(var.allowed_ssh_cidr_blocks)
 
-resource "aws_vpc_security_group_ingress_rule" "e3s_server_ssh_ipv6" {
   security_group_id = aws_security_group.e3s_server.id
   ip_protocol       = "tcp"
-  cidr_ipv6         = "::/0"
+  cidr_ipv4         = each.value
   from_port         = 22
   to_port           = 22
-  description       = "ssh"
+  description       = "Allow SSH from allowed IP"
 }
 
 resource "aws_vpc_security_group_egress_rule" "e3s_server_outbound_traffic_ipv4" {
@@ -181,4 +188,22 @@ resource "aws_vpc_security_group_egress_rule" "codebuild_outbound_traffic_ipv6" 
   security_group_id = aws_security_group.codebuild[0].id
   ip_protocol       = "-1"
   cidr_ipv6         = "::/0"
+}
+
+# Migration block
+########################################################################################################################
+
+moved {
+  from = aws_vpc_security_group_ingress_rule.e3s_server_alb
+  to   = aws_vpc_security_group_ingress_rule.e3s_server_alb["0.0.0.0/0"]
+}
+
+moved {
+  from = aws_vpc_security_group_ingress_rule.e3s_server_router_ports
+  to   = aws_vpc_security_group_ingress_rule.e3s_server_router_ports_from_alb["0.0.0.0/0"]
+}
+
+moved {
+  from = aws_vpc_security_group_ingress_rule.e3s_server_ssh_ipv4
+  to   = aws_vpc_security_group_ingress_rule.e3s_server_ssh_ipv4["0.0.0.0/0"]
 }
