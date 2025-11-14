@@ -40,7 +40,7 @@ zebrunner = {
 }
 
 # Example: ["203.0.113.0/24", "198.51.100.50/32"]
-allowed_cidr_blocks = ["0.0.0.0/0"]
+allowed_e3s_server_cidr_blocks = ["0.0.0.0/0"]
 
 # SSH access restriction
-allowed_ssh_cidr_blocks = ["0.0.0.0/0"]
+allowed_e3s_server_ssh_cidr_blocks = ["0.0.0.0/0"]

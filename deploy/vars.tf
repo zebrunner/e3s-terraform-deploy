@@ -49,13 +49,13 @@ variable "lacework_secret_name" {
   default  = "e3s/lacework/access-token"
 }
 
-variable "allowed_cidr_blocks" {
+variable "allowed_e3s_server_cidr_blocks" {
   type        = list(string)
   description = "List of IPv4 CIDR blocks allowed to access the application (ALB and router ports)"
   default     = ["0.0.0.0/0"]
 }
 
-variable "allowed_ssh_cidr_blocks" {
+variable "allowed_e3s_server_ssh_cidr_blocks" {
   type        = list(string)
   description = "List of IPv4 CIDR blocks allowed to SSH into the server"
   default     = ["0.0.0.0/0"]

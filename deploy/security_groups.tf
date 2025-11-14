@@ -4,7 +4,7 @@ resource "aws_security_group" "e3s_server" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "e3s_server_alb" {
-  for_each = toset(var.allowed_cidr_blocks)
+  for_each = toset(var.allowed_e3s_server_cidr_blocks)
 
   security_group_id = aws_security_group.e3s_server.id
   ip_protocol       = "tcp"
@@ -24,7 +24,7 @@ resource "aws_vpc_security_group_ingress_rule" "e3s_server_router_ports_from_alb
 }
 
 resource "aws_vpc_security_group_ingress_rule" "e3s_server_router_ports_direct" {
-  for_each = toset(var.allowed_cidr_blocks)
+  for_each = toset(var.allowed_e3s_server_cidr_blocks)
 
   security_group_id = aws_security_group.e3s_server.id
   ip_protocol       = "tcp"
@@ -35,7 +35,7 @@ resource "aws_vpc_security_group_ingress_rule" "e3s_server_router_ports_direct" 
 }
 
 resource "aws_vpc_security_group_ingress_rule" "e3s_server_ssh_ipv4" {
-  for_each = toset(var.allowed_ssh_cidr_blocks)
+  for_each = toset(var.allowed_e3s_server_ssh_cidr_blocks)
 
   security_group_id = aws_security_group.e3s_server.id
   ip_protocol       = "tcp"
