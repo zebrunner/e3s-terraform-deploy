@@ -34,17 +34,6 @@ resource "aws_vpc_security_group_ingress_rule" "e3s_server_router_ports_direct" 
   description       = "Allow router ports from allowed IP"
 }
 
-resource "aws_vpc_security_group_ingress_rule" "e3s_server_ssh_ipv4" {
-  for_each = toset(var.allowed_e3s_server_ssh_cidr_blocks)
-
-  security_group_id = aws_security_group.e3s_server.id
-  ip_protocol       = "tcp"
-  cidr_ipv4         = each.value
-  from_port         = 22
-  to_port           = 22
-  description       = "Allow SSH from allowed IP"
-}
-
 resource "aws_vpc_security_group_egress_rule" "e3s_server_outbound_traffic_ipv4" {
   security_group_id = aws_security_group.e3s_server.id
   ip_protocol       = "-1"
@@ -201,9 +190,4 @@ moved {
 moved {
   from = aws_vpc_security_group_ingress_rule.e3s_server_router_ports
   to   = aws_vpc_security_group_ingress_rule.e3s_server_router_ports_direct["0.0.0.0/0"]
-}
-
-moved {
-  from = aws_vpc_security_group_ingress_rule.e3s_server_ssh_ipv4
-  to   = aws_vpc_security_group_ingress_rule.e3s_server_ssh_ipv4["0.0.0.0/0"]
 }

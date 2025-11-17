@@ -55,12 +55,6 @@ variable "allowed_e3s_server_cidr_blocks" {
   default     = ["0.0.0.0/0"]
 }
 
-variable "allowed_e3s_server_ssh_cidr_blocks" {
-  type        = list(string)
-  description = "List of IPv4 CIDR blocks allowed to SSH into the server"
-  default     = ["0.0.0.0/0"]
-}
-
 # Optional
 variable "cert" {
   type    = string
