@@ -37,7 +37,7 @@ resource "aws_instance" "e3s_server" {
   instance_type        = var.e3s_server_instance_type
   iam_instance_profile = aws_iam_instance_profile.e3s_server.name
 
-  vpc_security_group_ids = [aws_security_group.e3s_server.id]
+  vpc_security_group_ids = [aws_security_group.e3s_server.id, aws_security_group.e3s_server_1.id, aws_security_group.e3s_server_2.id]
   subnet_id              = var.private_subnet_1_id
 
   cpu_options {
