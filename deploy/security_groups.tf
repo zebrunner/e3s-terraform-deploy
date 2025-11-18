@@ -1,8 +1,8 @@
 locals {
   cidr_blocks_chunks = chunklist(var.allowed_e3s_server_cidr_blocks, 55)
   cidr_blocks_sg     = try(local.cidr_blocks_chunks[0], [])
-  cidr_blocks_sg1    = try(local.cidr_blocks_chunks[1], [])
-  cidr_blocks_sg2    = try(local.cidr_blocks_chunks[2], [])
+  cidr_blocks_sg2    = try(local.cidr_blocks_chunks[1], [])
+  cidr_blocks_sg3    = try(local.cidr_blocks_chunks[2], [])
 }
 
 resource "aws_security_group" "e3s_server" {
@@ -42,35 +42,6 @@ resource "aws_vpc_security_group_egress_rule" "e3s_server_outbound_traffic_ipv6"
   cidr_ipv6         = "::/0"
 }
 
-# Security Group 1
-resource "aws_security_group" "e3s_server_1" {
-  vpc_id = var.vpc_id
-  name   = "${local.e3s_server_sg_name}-1"
-}
-
-resource "aws_vpc_security_group_ingress_rule" "e3s_server_1_alb" {
-  for_each = toset(local.cidr_blocks_sg1)
-
-  security_group_id = aws_security_group.e3s_server_1.id
-  ip_protocol       = "tcp"
-  cidr_ipv4         = each.value
-  from_port         = var.cert == "" ? 80 : 443
-  to_port           = var.cert == "" ? 80 : 443
-  description       = "Allow HTTP/HTTPS from allowed IP"
-}
-
-resource "aws_vpc_security_group_egress_rule" "e3s_server_1_outbound_traffic_ipv4" {
-  security_group_id = aws_security_group.e3s_server_1.id
-  ip_protocol       = "-1"
-  cidr_ipv4         = "0.0.0.0/0"
-}
-
-resource "aws_vpc_security_group_egress_rule" "e3s_server_1_outbound_traffic_ipv6" {
-  security_group_id = aws_security_group.e3s_server_1.id
-  ip_protocol       = "-1"
-  cidr_ipv6         = "::/0"
-}
-
 # Security Group 2
 resource "aws_security_group" "e3s_server_2" {
   vpc_id = var.vpc_id
@@ -96,6 +67,35 @@ resource "aws_vpc_security_group_egress_rule" "e3s_server_2_outbound_traffic_ipv
 
 resource "aws_vpc_security_group_egress_rule" "e3s_server_2_outbound_traffic_ipv6" {
   security_group_id = aws_security_group.e3s_server_2.id
+  ip_protocol       = "-1"
+  cidr_ipv6         = "::/0"
+}
+
+# Security Group 3
+resource "aws_security_group" "e3s_server_3" {
+  vpc_id = var.vpc_id
+  name   = "${local.e3s_server_sg_name}-3"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "e3s_server_3_alb" {
+  for_each = toset(local.cidr_blocks_sg3)
+
+  security_group_id = aws_security_group.e3s_server_3.id
+  ip_protocol       = "tcp"
+  cidr_ipv4         = each.value
+  from_port         = var.cert == "" ? 80 : 443
+  to_port           = var.cert == "" ? 80 : 443
+  description       = "Allow HTTP/HTTPS from allowed IP"
+}
+
+resource "aws_vpc_security_group_egress_rule" "e3s_server_3_outbound_traffic_ipv4" {
+  security_group_id = aws_security_group.e3s_server_3.id
+  ip_protocol       = "-1"
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_egress_rule" "e3s_server_3_outbound_traffic_ipv6" {
+  security_group_id = aws_security_group.e3s_server_3.id
   ip_protocol       = "-1"
   cidr_ipv6         = "::/0"
 }
