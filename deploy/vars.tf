@@ -49,6 +49,17 @@ variable "lacework_secret_name" {
   default  = "e3s/lacework/access-token"
 }
 
+variable "allowed_e3s_server_cidr_blocks" {
+  type        = list(string)
+  description = "List of IPv4 CIDR blocks allowed to access the application (ALB and router ports). Maximum 165 CIDR blocks (55 per security group, 3 security groups total)"
+  default     = ["0.0.0.0/0"]
+
+  validation {
+    condition     = length(var.allowed_e3s_server_cidr_blocks) <= 165
+    error_message = "Maximum 165 CIDR blocks (55 per security group, 3 security groups total)"
+  }
+}
+
 # Optional
 variable "cert" {
   type    = string
