@@ -232,11 +232,3 @@ resource "aws_vpc_security_group_egress_rule" "codebuild_outbound_traffic_ipv6" 
   ip_protocol       = "-1"
   cidr_ipv6         = "::/0"
 }
-
-# Migration block
-########################################################################################################################
-
-moved {
-  from = aws_vpc_security_group_ingress_rule.e3s_server_alb
-  to   = aws_vpc_security_group_ingress_rule.e3s_server_alb["0.0.0.0/0"]
-}
