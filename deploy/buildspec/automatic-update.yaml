@@ -14,15 +14,56 @@ phases:
       - cd deploy
       - aws secretsmanager get-secret-value --secret-id ${config_s3_tfbackend_secret_id} --query SecretString --output text > config.s3.tfbackend
       - aws secretsmanager get-secret-value --secret-id ${terraform_tfvars_secret_id} --query SecretString --output text > terraform.tfvars
+      - "SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id \"$SNS_SECRET_ID\" --query SecretString --output text)"
+      - "export SUCCESS_SNS_TOPIC_ARN=$(echo \"$SECRET_JSON\" | jq -r '.SUCCESS_SNS_TOPIC_ARN')"
+      - "export FAILURE_SNS_TOPIC_ARN=$(echo \"$SECRET_JSON\" | jq -r '.FAILURE_SNS_TOPIC_ARN')"
   build:
     commands:
       - echo Initializing Terraform…
       - terraform init -backend-config="config.s3.tfbackend"
       - echo Applying…
       - terraform apply -auto-approve -var-file="terraform.tfvars"
+    on-failure: CONTINUE
   post_build:
     commands:
-      - echo "✅ Terraform apply completed"
+      - |
+        echo "=== POST BUILD CHECK ==="
+        
+        CURRENT_UTC_TIME=$(date -u "+%Y-%m-%d %H:%M:%S UTC")
+
+        PROJECT_NAME="${CODEBUILD_BUILD_ID%%:*}"
+        BUILD_NUM="${CODEBUILD_BUILD_NUMBER}"
+
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+        REGION="${AWS_REGION}"
+
+        LOG_URL="https://${REGION}.console.aws.amazon.com/codesuite/codebuild/${ACCOUNT_ID}/projects/${PROJECT_NAME}/build/${CODEBUILD_BUILD_ID}/?region=${REGION}"
+
+        if [ "$CODEBUILD_BUILD_SUCCEEDING" -eq 1 ]; then
+          echo "Status: SUCCESS" >> message.txt
+        else
+          echo "Status: FAILURE" >> message.txt
+        fi
+
+        echo "" >> message.txt
+        echo "Project: ${PROJECT_NAME}" >> message.txt
+        echo "Build Number: ${BUILD_NUM}" >> message.txt
+        echo "Time: ${CURRENT_UTC_TIME}" >> message.txt
+        echo "Logs: ${LOG_URL}" >> message.txt
+
+        SUBJECT_PREFIX="ESG-AUTOAPGATE BUILD STATUS - ${PROJECT_NAME} - ${BUILD_NUM}"
+
+        if [ "$CODEBUILD_BUILD_SUCCEEDING" -eq 1 ]; then
+          aws sns publish \
+            --topic-arn "$SUCCESS_SNS_TOPIC_ARN" \
+            --subject "${SUBJECT_PREFIX} - SUCCESS" \
+            --message file://message.txt
+        else
+          aws sns publish \
+            --topic-arn "$FAILURE_SNS_TOPIC_ARN" \
+            --subject "${SUBJECT_PREFIX} - FAILURE" \
+            --message file://message.txt
+        fi
 artifacts:
   files:
     - "**/*"
