@@ -142,6 +142,22 @@ resource "aws_iam_role_policy" "codebuild" {
   )
 }
 
+resource "aws_iam_role_policy" "codebuild_sns_management" {
+  count  = var.automatic_update_enabled ? 1 : 0
+  name   = "${local.e3s_codebuild_policy_name}-sns-management"
+  role   = aws_iam_role.codebuild[0].id
+  policy = templatefile(
+    "./iam_data/codebuild-sns-management-policy.json",
+    {
+      account                = data.aws_caller_identity.current.account_id
+      region                 = var.region
+      sns_topic_secret_name  = var.sns_topic_secret_name
+      success_sns_topic_name = var.success_sns_topic_name
+      failure_sns_topic_name = var.failure_sns_topic_name
+    }
+  )
+}
+
 resource "aws_iam_role_policy_attachment" "codebuild_extra_policy_1" {
   count      = var.automatic_update_enabled ? 1 : 0
   role       = aws_iam_role.codebuild[0].id
