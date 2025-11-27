@@ -14,9 +14,6 @@ phases:
       - cd deploy
       - aws secretsmanager get-secret-value --secret-id ${config_s3_tfbackend_secret_id} --query SecretString --output text > config.s3.tfbackend
       - aws secretsmanager get-secret-value --secret-id ${terraform_tfvars_secret_id} --query SecretString --output text > terraform.tfvars
-      - "SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id \"$SNS_SECRET_ID\" --query SecretString --output text)"
-      - "export SUCCESS_SNS_TOPIC_ARN=$(echo \"$SECRET_JSON\" | jq -r '.SUCCESS_SNS_TOPIC_ARN')"
-      - "export FAILURE_SNS_TOPIC_ARN=$(echo \"$SECRET_JSON\" | jq -r '.FAILURE_SNS_TOPIC_ARN')"
   build:
     commands:
       - echo Initializing Terraform…
@@ -28,6 +25,11 @@ phases:
     commands:
       - |
         echo "=== POST BUILD CHECK ==="
+        
+        echo "Reading SNS topic ARNs from Secrets Manager…"
+        SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id "$SNS_SECRET_ID" --query SecretString --output text)
+        SUCCESS_SNS_TOPIC_ARN=$(echo "$SECRET_JSON" | jq -r '.SUCCESS_SNS_TOPIC_ARN')
+        FAILURE_SNS_TOPIC_ARN=$(echo "$SECRET_JSON" | jq -r '.FAILURE_SNS_TOPIC_ARN')
         
         CURRENT_UTC_TIME=$(date -u "+%Y-%m-%d %H:%M:%S UTC")
 
