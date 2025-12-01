@@ -7,7 +7,6 @@ resource "aws_sns_topic" "success" {
 
   tags = {
     Name        = var.success_sns_topic_name
-    Environment = "test-migration"
     Purpose     = "CodeBuild Success Notifications"
   }
 }
@@ -18,7 +17,6 @@ resource "aws_sns_topic" "failure" {
 
   tags = {
     Name        = var.failure_sns_topic_name
-    Environment = "test-migration"
     Purpose     = "CodeBuild Failure Notifications"
   }
 }
@@ -53,7 +51,6 @@ resource "aws_secretsmanager_secret" "sns_topics" {
 
   tags = {
     Name        = var.sns_topic_secret_name
-    Environment = "test-migration"
     Purpose     = "CodeBuild Notifications"
   }
 }
