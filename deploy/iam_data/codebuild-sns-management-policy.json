@@ -16,7 +16,7 @@
                 "secretsmanager:ListSecrets"
             ],
             "Resource": [
-                "arn:aws:secretsmanager:${region}:${account}:secret:${sns_topic_secret_name}*"
+                "arn:aws:secretsmanager:${region}:${account}:secret:${notification_sns_topic_secret_name}*"
             ]
         },
         {
@@ -33,8 +33,8 @@
                 "sns:ListTopics"
             ],
             "Resource": [
-                "arn:aws:sns:${region}:${account}:${success_sns_topic_name}",
-                "arn:aws:sns:${region}:${account}:${failure_sns_topic_name}"
+                "arn:aws:sns:${region}:${account}:${notification_sns_topic_success}",
+                "arn:aws:sns:${region}:${account}:${notification_sns_topic_failure}"
             ]
         },
         {
@@ -48,8 +48,8 @@
                 "sns:SetSubscriptionAttributes"
             ],
             "Resource": [
-                "arn:aws:sns:${region}:${account}:${success_sns_topic_name}",
-                "arn:aws:sns:${region}:${account}:${failure_sns_topic_name}"
+                "arn:aws:sns:${region}:${account}:${notification_sns_topic_success}",
+                "arn:aws:sns:${region}:${account}:${notification_sns_topic_failure}"
             ]
         },
         {
@@ -59,8 +59,8 @@
                 "sns:Publish"
             ],
             "Resource": [
-                "arn:aws:sns:${region}:${account}:${success_sns_topic_name}",
-                "arn:aws:sns:${region}:${account}:${failure_sns_topic_name}"
+                "arn:aws:sns:${region}:${account}:${notification_sns_topic_success}",
+                "arn:aws:sns:${region}:${account}:${notification_sns_topic_failure}"
             ]
         },
         {
@@ -70,7 +70,7 @@
                 "secretsmanager:GetSecretValue"
             ],
             "Resource": [
-                "arn:aws:secretsmanager:${region}:${account}:secret:${sns_topic_secret_name}*"
+                "arn:aws:secretsmanager:${region}:${account}:secret:${notification_sns_topic_secret_name}*"
             ]
         }
     ]
