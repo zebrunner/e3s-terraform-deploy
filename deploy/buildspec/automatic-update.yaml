@@ -53,7 +53,7 @@ phases:
         echo "Time: ${CURRENT_UTC_TIME}" >> message.txt
         echo "Logs: ${LOG_URL}" >> message.txt
 
-        SUBJECT_PREFIX="ESG-AUTOAPGATE BUILD STATUS - ${PROJECT_NAME} - ${BUILD_NUM}"
+        SUBJECT_PREFIX="ESG-AUTOMATIC UPDATE BUILD STATUS - ${PROJECT_NAME} - ${BUILD_NUM}"
 
         if [ "$CODEBUILD_BUILD_SUCCEEDING" -eq 1 ]; then
           aws sns publish \
