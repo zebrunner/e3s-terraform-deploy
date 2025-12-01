@@ -3,20 +3,20 @@
 
 resource "aws_sns_topic" "success" {
   count = var.automatic_update_enabled ? 1 : 0
-  name  = var.success_sns_topic_name
+  name  = var.notification_sns_topic_success
 
   tags = {
-    Name        = var.success_sns_topic_name
+    Name        = var.notification_sns_topic_success
     Purpose     = "CodeBuild Success Notifications"
   }
 }
 
 resource "aws_sns_topic" "failure" {
   count = var.automatic_update_enabled ? 1 : 0
-  name  = var.failure_sns_topic_name
+  name  = var.notification_sns_topic_failure
 
   tags = {
-    Name        = var.failure_sns_topic_name
+    Name        = var.notification_sns_topic_failure
     Purpose     = "CodeBuild Failure Notifications"
   }
 }
@@ -25,20 +25,20 @@ resource "aws_sns_topic" "failure" {
 ########################################################################################################################
 
 resource "aws_sns_topic_subscription" "success_emails" {
-  count     = var.automatic_update_enabled ? length(var.success_notification_emails) : 0
+  count     = var.automatic_update_enabled ? length(var.notification_email_success) : 0
   topic_arn = aws_sns_topic.success[0].arn
   protocol  = "email"
-  endpoint  = var.success_notification_emails[count.index]
+  endpoint  = var.notification_email_success[count.index]
 }
 
 # Email Subscriptions for Failure Topic
 ########################################################################################################################
 
 resource "aws_sns_topic_subscription" "failure_emails" {
-  count     = var.automatic_update_enabled ? length(var.failure_notification_emails) : 0
+  count     = var.automatic_update_enabled ? length(var.notification_email_failure) : 0
   topic_arn = aws_sns_topic.failure[0].arn
   protocol  = "email"
-  endpoint  = var.failure_notification_emails[count.index]
+  endpoint  = var.notification_email_failure[count.index]
 }
 
 # Secrets Manager Secret with SNS Topic ARNs
@@ -46,11 +46,11 @@ resource "aws_sns_topic_subscription" "failure_emails" {
 
 resource "aws_secretsmanager_secret" "sns_topics" {
   count       = var.automatic_update_enabled ? 1 : 0
-  name        = var.sns_topic_secret_name
+  name        = var.notification_sns_topic_secret_name
   description = "SNS Topic ARNs for CodeBuild success and failure notifications"
 
   tags = {
-    Name        = var.sns_topic_secret_name
+    Name        = var.notification_sns_topic_secret_name
     Purpose     = "CodeBuild Notifications"
   }
 }

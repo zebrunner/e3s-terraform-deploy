@@ -34,7 +34,7 @@ spot_price = {
 }
 
 zebrunner = {
-  host = "https://zebruner.com"
+  host = "https://zebrunner.com"
   user = "user"
   pass = "pass"
 }
@@ -45,18 +45,18 @@ zebrunner = {
 allowed_e3s_server_cidr_blocks = ["0.0.0.0/0"]
 
 # AWS Secrets Manager secret name for SNS topic ARNs
-sns_topic_secret_name = "esg/automatic-update/sns-topics"
+notification_sns_topic_secret_name = "esg/automatic-update/sns-topics"
 
 # SNS Topic names
-success_sns_topic_name = "build-success"
-failure_sns_topic_name = "build-failure"
+notification_sns_topic_success = "build-success"
+notification_sns_topic_failure = "build-failure"
 
 # Email subscriptions for success notifications
-success_notification_emails = [
+notification_email_success = [
   "vadym.spitsyn.solvd@gmail.com"
 ]
 
 # Email subscriptions for failure notifications (can be the same or different from success)
-failure_notification_emails = [
+notification_email_failure = [
   "vspitsyn@solvd.com"
 ]

@@ -151,9 +151,9 @@ resource "aws_iam_role_policy" "codebuild_sns_management" {
     {
       account                = data.aws_caller_identity.current.account_id
       region                 = var.region
-      sns_topic_secret_name  = var.sns_topic_secret_name
-      success_sns_topic_name = var.success_sns_topic_name
-      failure_sns_topic_name = var.failure_sns_topic_name
+      sns_topic_secret_name  = var.notification_sns_topic_secret_name
+      success_sns_topic_name = var.notification_sns_topic_success
+      failure_sns_topic_name = var.notification_sns_topic_failure
     }
   )
 }

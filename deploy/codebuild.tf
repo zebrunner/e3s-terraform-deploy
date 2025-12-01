@@ -22,7 +22,7 @@ resource "aws_codebuild_project" "automatic_update" {
 
     environment_variable {
       name  = "SNS_SECRET_ID"
-      value = var.sns_topic_secret_name
+      value = var.notification_sns_topic_secret_name
     }
   }
 
