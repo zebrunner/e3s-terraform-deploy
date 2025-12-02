@@ -51,7 +51,7 @@ phases:
         
         echo "Formatting AMI names and dates for display…"
         E3S_DISPLAY_NAME=$(echo "$E3S_AMI_NAME" | sed 's/ubuntu\/images\/hvm-ssd\///')
-        ESG_WORKER_DISPLAY_NAME=$(echo "$ESG_WORKER_NODE_AMI_NAME" | sed 's/Light-//' | sed 's/Z-.*/Z/')
+        ESG_WORKER_DISPLAY_NAME=$(echo "$ESG_WORKER_NODE_AMI_NAME" | sed 's/Z-.*/Z/')
         E3S_DATE_FORMATTED=$(date -d "$E3S_AMI_DATE" "+%Y-%m-%d %H:%M:%S UTC" 2>/dev/null || echo "$E3S_AMI_DATE")
         ESG_WORKER_NODE_DATE_FORMATTED=$(date -d "$ESG_WORKER_NODE_AMI_DATE" "+%Y-%m-%d %H:%M:%S UTC" 2>/dev/null || echo "$ESG_WORKER_NODE_AMI_DATE")
 
