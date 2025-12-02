@@ -49,7 +49,9 @@ phases:
           ESG_WORKER_NODE_AMI_DATE="N/A"
         fi
         
-        echo "Formatting date/time for display…"
+        echo "Formatting AMI names and dates for display…"
+        E3S_DISPLAY_NAME=$(echo "$E3S_AMI_NAME" | sed 's/ubuntu\/images\/hvm-ssd\///')
+        ESG_WORKER_DISPLAY_NAME=$(echo "$ESG_WORKER_NODE_AMI_NAME" | sed 's/Light-//' | sed 's/Z-.*/Z/')
         E3S_DATE_FORMATTED=$(date -d "$E3S_AMI_DATE" "+%Y-%m-%d %H:%M:%S UTC" 2>/dev/null || echo "$E3S_AMI_DATE")
         ESG_WORKER_NODE_DATE_FORMATTED=$(date -d "$ESG_WORKER_NODE_AMI_DATE" "+%Y-%m-%d %H:%M:%S UTC" 2>/dev/null || echo "$ESG_WORKER_NODE_AMI_DATE")
 
@@ -58,8 +60,8 @@ phases:
           echo "" >> message.txt
           echo "The QA ESG environment has been successfully updated to the latest AMIs." >> message.txt
           echo "" >> message.txt
-          echo "ESG Server: ${E3S_AMI_NAME} (created at ${E3S_DATE_FORMATTED})" >> message.txt
-          echo "ESG Worker Nodes: ${ESG_WORKER_NODE_AMI_NAME} (created at ${ESG_WORKER_NODE_DATE_FORMATTED})" >> message.txt
+          echo "ESG Server: ${E3S_DISPLAY_NAME} (created at ${E3S_DATE_FORMATTED})" >> message.txt
+          echo "ESG Worker Nodes: ${ESG_WORKER_DISPLAY_NAME} (created at ${ESG_WORKER_NODE_DATE_FORMATTED})" >> message.txt
           echo "" >> message.txt
           echo "If you notice anything unusual, please let us know." >> message.txt
           echo "" >> message.txt
@@ -84,8 +86,8 @@ phases:
           echo "The QA ESG environment update has failed." >> message.txt
           echo "" >> message.txt
           echo "Attempted AMI Updates:" >> message.txt
-          echo "- ESG Server: ${E3S_AMI_NAME} (created at ${E3S_DATE_FORMATTED})" >> message.txt
-          echo "- ESG Worker Nodes: ${ESG_WORKER_NODE_AMI_NAME} (created at ${ESG_WORKER_NODE_DATE_FORMATTED})" >> message.txt
+          echo "- ESG Server: ${E3S_DISPLAY_NAME} (created at ${E3S_DATE_FORMATTED})" >> message.txt
+          echo "- ESG Worker Nodes: ${ESG_WORKER_DISPLAY_NAME} (created at ${ESG_WORKER_NODE_DATE_FORMATTED})" >> message.txt
           echo "" >> message.txt
           echo "Build Information:" >> message.txt
           echo "- Project: ${PROJECT_NAME}" >> message.txt
