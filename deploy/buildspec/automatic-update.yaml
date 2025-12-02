@@ -30,40 +30,77 @@ phases:
         SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id "$SNS_SECRET_ID" --query SecretString --output text)
         SUCCESS_SNS_TOPIC_ARN=$(echo "$SECRET_JSON" | jq -r '.SUCCESS_SNS_TOPIC_ARN')
         FAILURE_SNS_TOPIC_ARN=$(echo "$SECRET_JSON" | jq -r '.FAILURE_SNS_TOPIC_ARN')
-        
-        CURRENT_UTC_TIME=$(date -u "+%Y-%m-%d %H:%M:%S UTC")
 
-        PROJECT_NAME="${CODEBUILD_BUILD_ID%%:*}"
-        BUILD_NUM="${CODEBUILD_BUILD_NUMBER}"
-
-        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-        REGION="${AWS_REGION}"
-
-        LOG_URL="https://${REGION}.console.aws.amazon.com/codesuite/codebuild/${ACCOUNT_ID}/projects/${PROJECT_NAME}/build/${CODEBUILD_BUILD_ID}/?region=${REGION}"
-
-        if [ "$CODEBUILD_BUILD_SUCCEEDING" -eq 1 ]; then
-          echo "Status: SUCCESS" >> message.txt
+        echo "Reading AMI information from Terraform outputs…"
+        if [ -f "ami_info.txt" ]; then
+          AMI_JSON=$(cat ami_info.txt)
+          E3S_AMI_ID=$(echo "$AMI_JSON" | jq -r '.e3s_server_ami_id')
+          E3S_AMI_NAME=$(echo "$AMI_JSON" | jq -r '.e3s_server_ami_name')
+          E3S_AMI_DATE=$(echo "$AMI_JSON" | jq -r '.e3s_server_ami_date')
+          ESG_WORKER_NODE_AMI_ID=$(echo "$AMI_JSON" | jq -r '.esg_worker_node_ami_id')
+          ESG_WORKER_NODE_AMI_NAME=$(echo "$AMI_JSON" | jq -r '.esg_worker_node_ami_name')
+          ESG_WORKER_NODE_AMI_DATE=$(echo "$AMI_JSON" | jq -r '.esg_worker_node_ami_date')
         else
-          echo "Status: FAILURE" >> message.txt
+          E3S_AMI_ID="N/A"
+          E3S_AMI_NAME="N/A"
+          E3S_AMI_DATE="N/A"
+          ESG_WORKER_NODE_AMI_ID="N/A"
+          ESG_WORKER_NODE_AMI_NAME="N/A"
+          ESG_WORKER_NODE_AMI_DATE="N/A"
         fi
-
-        echo "" >> message.txt
-        echo "Project: ${PROJECT_NAME}" >> message.txt
-        echo "Build Number: ${BUILD_NUM}" >> message.txt
-        echo "Time: ${CURRENT_UTC_TIME}" >> message.txt
-        echo "Logs: ${LOG_URL}" >> message.txt
-
-        SUBJECT_PREFIX="ESG-AUTOMATIC UPDATE BUILD STATUS - ${PROJECT_NAME} - ${BUILD_NUM}"
+        
+        echo "Formatting date/time for display…"
+        E3S_DATE_FORMATTED=$(date -d "$E3S_AMI_DATE" "+%Y-%m-%d %H:%M:%S UTC" 2>/dev/null || echo "$E3S_AMI_DATE")
+        ESG_WORKER_NODE_DATE_FORMATTED=$(date -d "$ESG_WORKER_NODE_AMI_DATE" "+%Y-%m-%d %H:%M:%S UTC" 2>/dev/null || echo "$ESG_WORKER_NODE_AMI_DATE")
 
         if [ "$CODEBUILD_BUILD_SUCCEEDING" -eq 1 ]; then
+          echo "Hi there," >> message.txt
+          echo "" >> message.txt
+          echo "The QA ESG environment has been successfully updated to the latest AMIs." >> message.txt
+          echo "" >> message.txt
+          echo "ESG Server: ${E3S_AMI_NAME} (created at ${E3S_DATE_FORMATTED})" >> message.txt
+          echo "ESG Worker Nodes: ${ESG_WORKER_NODE_AMI_NAME} (created at ${ESG_WORKER_NODE_DATE_FORMATTED})" >> message.txt
+          echo "" >> message.txt
+          echo "If you notice anything unusual, please let us know." >> message.txt
+          echo "" >> message.txt
+          echo "Best regards," >> message.txt
+          echo "ESG Update Bot" >> message.txt
+          
           aws sns publish \
             --topic-arn "$SUCCESS_SNS_TOPIC_ARN" \
-            --subject "${SUBJECT_PREFIX} - SUCCESS" \
+            --subject "QA ESG – Successful AMI Update" \
             --message file://message.txt
         else
+          CURRENT_UTC_TIME=$(date -u "+%Y-%m-%d %H:%M:%S UTC")
+          PROJECT_NAME="${CODEBUILD_BUILD_ID%%:*}"
+          BUILD_NUM="${CODEBUILD_BUILD_NUMBER}"
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          REGION="${AWS_REGION}"
+          LOG_URL="https://${REGION}.console.aws.amazon.com/codesuite/codebuild/${ACCOUNT_ID}/projects/${PROJECT_NAME}/build/${CODEBUILD_BUILD_ID}/?region=${REGION}"
+          
+          echo "" >> message.txt
+          echo "Hi there," >> message.txt
+          echo "" >> message.txt
+          echo "The QA ESG environment update has failed." >> message.txt
+          echo "" >> message.txt
+          echo "Attempted AMI Updates:" >> message.txt
+          echo "- ESG Server: ${E3S_AMI_NAME} (created at ${E3S_DATE_FORMATTED})" >> message.txt
+          echo "- ESG Worker Nodes: ${ESG_WORKER_NODE_AMI_NAME} (created at ${ESG_WORKER_NODE_DATE_FORMATTED})" >> message.txt
+          echo "" >> message.txt
+          echo "Build Information:" >> message.txt
+          echo "- Project: ${PROJECT_NAME}" >> message.txt
+          echo "- Build Number: ${BUILD_NUM}" >> message.txt
+          echo "- Time: ${CURRENT_UTC_TIME}" >> message.txt
+          echo "- Logs: ${LOG_URL}" >> message.txt
+          echo "" >> message.txt
+          echo "Please check the logs for more details." >> message.txt
+          echo "" >> message.txt
+          echo "Best regards," >> message.txt
+          echo "ESG Update Bot" >> message.txt
+          
           aws sns publish \
             --topic-arn "$FAILURE_SNS_TOPIC_ARN" \
-            --subject "${SUBJECT_PREFIX} - FAILURE" \
+            --subject "QA ESG – AMI Update Failed" \
             --message file://message.txt
         fi
 artifacts:
