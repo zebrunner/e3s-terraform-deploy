@@ -87,7 +87,6 @@ phases:
           REGION="${AWS_REGION}"
           LOG_URL="https://${REGION}.console.aws.amazon.com/codesuite/codebuild/${ACCOUNT_ID}/projects/${PROJECT_NAME}/build/${CODEBUILD_BUILD_ID}/?region=${REGION}"
           
-          echo "" >> message.txt
           echo "Hi there," >> message.txt
           echo "" >> message.txt
           echo "The QA ESG environment update has failed." >> message.txt
