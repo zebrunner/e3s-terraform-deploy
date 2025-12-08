@@ -27,19 +27,19 @@ phases:
         echo "=== POST BUILD CHECK ==="
         
         echo "Reading SNS topic ARNs from Secrets Manager…"
-        SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id "$SNS_SECRET_ID" --query SecretString --output text)
-        SUCCESS_SNS_TOPIC_ARN=$(echo "$SECRET_JSON" | jq -r '.SUCCESS_SNS_TOPIC_ARN')
-        FAILURE_SNS_TOPIC_ARN=$(echo "$SECRET_JSON" | jq -r '.FAILURE_SNS_TOPIC_ARN')
+        SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id "$${SNS_SECRET_ID}" --query SecretString --output text)
+        SUCCESS_SNS_TOPIC_ARN=$(echo "$${SECRET_JSON}" | jq -r '.SUCCESS_SNS_TOPIC_ARN')
+        FAILURE_SNS_TOPIC_ARN=$(echo "$${SECRET_JSON}" | jq -r '.FAILURE_SNS_TOPIC_ARN')
 
         echo "Reading AMI information from Terraform outputs…"
         if [ -f "ami_info.txt" ]; then
           AMI_JSON=$(cat ami_info.txt)
-          ESG_SERVER_AMI_ID=$(echo "$AMI_JSON" | jq -r '.esg_server_ami_id')
-          ESG_SERVER_AMI_NAME=$(echo "$AMI_JSON" | jq -r '.esg_server_ami_name')
-          ESG_SERVER_AMI_DATE=$(echo "$AMI_JSON" | jq -r '.esg_server_ami_date')
-          ESG_WORKER_NODE_AMI_ID=$(echo "$AMI_JSON" | jq -r '.esg_worker_node_ami_id')
-          ESG_WORKER_NODE_AMI_NAME=$(echo "$AMI_JSON" | jq -r '.esg_worker_node_ami_name')
-          ESG_WORKER_NODE_AMI_DATE=$(echo "$AMI_JSON" | jq -r '.esg_worker_node_ami_date')
+          ESG_SERVER_AMI_ID=$(echo "$${AMI_JSON}" | jq -r '.esg_server_ami_id')
+          ESG_SERVER_AMI_NAME=$(echo "$${AMI_JSON}" | jq -r '.esg_server_ami_name')
+          ESG_SERVER_AMI_DATE=$(echo "$${AMI_JSON}" | jq -r '.esg_server_ami_date')
+          ESG_WORKER_NODE_AMI_ID=$(echo "$${AMI_JSON}" | jq -r '.esg_worker_node_ami_id')
+          ESG_WORKER_NODE_AMI_NAME=$(echo "$${AMI_JSON}" | jq -r '.esg_worker_node_ami_name')
+          ESG_WORKER_NODE_AMI_DATE=$(echo "$${AMI_JSON}" | jq -r '.esg_worker_node_ami_date')
         else
           ESG_SERVER_AMI_ID="N/A"
           ESG_SERVER_AMI_NAME="N/A"
@@ -50,25 +50,25 @@ phases:
         fi
         
         echo "Formatting AMI names and dates for display…"
-        ESG_SERVER_AMI_DISPLAY_NAME=$(echo "$ESG_SERVER_AMI_NAME" | sed 's/ubuntu\/images\/hvm-ssd\///')
-        ESG_WORKER_NODE_AMI_DISPLAY_NAME=$(echo "$ESG_WORKER_NODE_AMI_NAME" | sed 's/Z-.*/Z/')
-        ESG_SERVER_AMI_DISPLAY_DATE=$(date -d "$ESG_SERVER_AMI_DATE" "+%Y-%m-%d %H:%M:%S UTC" 2>/dev/null || echo "$ESG_SERVER_AMI_DATE")
-        ESG_WORKER_NODE_AMI_DISPLAY_DATE=$(date -d "$ESG_WORKER_NODE_AMI_DATE" "+%Y-%m-%d %H:%M:%S UTC" 2>/dev/null || echo "$ESG_WORKER_NODE_AMI_DATE")
+        ESG_SERVER_AMI_DISPLAY_NAME=$(echo "$${ESG_SERVER_AMI_NAME}" | sed 's/ubuntu\/images\/hvm-ssd\///')
+        ESG_WORKER_NODE_AMI_DISPLAY_NAME=$(echo "$${ESG_WORKER_NODE_AMI_NAME}" | sed 's/Z-.*/Z/')
+        ESG_SERVER_AMI_DISPLAY_DATE=$(date -d "$${ESG_SERVER_AMI_DATE}" "+%Y-%m-%d %H:%M:%S UTC" 2>/dev/null || echo "$${ESG_SERVER_AMI_DATE}")
+        ESG_WORKER_NODE_AMI_DISPLAY_DATE=$(date -d "$${ESG_WORKER_NODE_AMI_DATE}" "+%Y-%m-%d %H:%M:%S UTC" 2>/dev/null || echo "$${ESG_WORKER_NODE_AMI_DATE}")
 
-        if [ "$CODEBUILD_BUILD_SUCCEEDING" -eq 1 ]; then
+        if [ "$${CODEBUILD_BUILD_SUCCEEDING}" -eq 1 ]; then
           echo "Hi there," >> message.txt
           echo "" >> message.txt
           echo "The QA ESG environment has been successfully updated to the latest AMIs." >> message.txt
           echo "" >> message.txt
           echo "ESG Server:" >> message.txt
-          echo "  AMI ID: ${ESG_SERVER_AMI_ID}" >> message.txt
-          echo "  Name: ${ESG_SERVER_AMI_DISPLAY_NAME}" >> message.txt
-          echo "  Created: ${ESG_SERVER_AMI_DISPLAY_DATE}" >> message.txt
+          echo "  AMI ID: $${ESG_SERVER_AMI_ID}" >> message.txt
+          echo "  Name: $${ESG_SERVER_AMI_DISPLAY_NAME}" >> message.txt
+          echo "  Created: $${ESG_SERVER_AMI_DISPLAY_DATE}" >> message.txt
           echo "" >> message.txt
           echo "ESG Worker Nodes:" >> message.txt
-          echo "  AMI ID: ${ESG_WORKER_NODE_AMI_ID}" >> message.txt
-          echo "  Name: ${ESG_WORKER_NODE_AMI_DISPLAY_NAME}" >> message.txt
-          echo "  Created: ${ESG_WORKER_NODE_AMI_DISPLAY_DATE}" >> message.txt
+          echo "  AMI ID: $${ESG_WORKER_NODE_AMI_ID}" >> message.txt
+          echo "  Name: $${ESG_WORKER_NODE_AMI_DISPLAY_NAME}" >> message.txt
+          echo "  Created: $${ESG_WORKER_NODE_AMI_DISPLAY_DATE}" >> message.txt
           echo "" >> message.txt
           echo "If you notice anything unusual, please let us know." >> message.txt
           echo "" >> message.txt
@@ -81,11 +81,11 @@ phases:
             --message file://message.txt
         else
           CURRENT_UTC_TIME=$(date -u "+%Y-%m-%d %H:%M:%S UTC")
-          PROJECT_NAME="${CODEBUILD_BUILD_ID%%:*}"
-          BUILD_NUM="${CODEBUILD_BUILD_NUMBER}"
+          PROJECT_NAME="$${CODEBUILD_BUILD_ID%%:*}"
+          BUILD_NUM="$${CODEBUILD_BUILD_NUMBER}"
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          REGION="${AWS_REGION}"
-          LOG_URL="https://${REGION}.console.aws.amazon.com/codesuite/codebuild/${ACCOUNT_ID}/projects/${PROJECT_NAME}/build/${CODEBUILD_BUILD_ID}/?region=${REGION}"
+          REGION="$${AWS_REGION}"
+          LOG_URL="https://$${REGION}.console.aws.amazon.com/codesuite/codebuild/$${ACCOUNT_ID}/projects/$${PROJECT_NAME}/build/$${CODEBUILD_BUILD_ID}/?region=$${REGION}"
           
           echo "Hi there," >> message.txt
           echo "" >> message.txt
@@ -94,20 +94,20 @@ phases:
           echo "Attempted AMI Updates:" >> message.txt
           echo "" >> message.txt
           echo "ESG Server:" >> message.txt
-          echo "  AMI ID: ${ESG_SERVER_AMI_ID}" >> message.txt
-          echo "  Name: ${ESG_SERVER_AMI_DISPLAY_NAME}" >> message.txt
-          echo "  Created: ${ESG_SERVER_AMI_DISPLAY_DATE}" >> message.txt
+          echo "  AMI ID: $${ESG_SERVER_AMI_ID}" >> message.txt
+          echo "  Name: $${ESG_SERVER_AMI_DISPLAY_NAME}" >> message.txt
+          echo "  Created: $${ESG_SERVER_AMI_DISPLAY_DATE}" >> message.txt
           echo "" >> message.txt
           echo "ESG Worker Nodes:" >> message.txt
-          echo "  AMI ID: ${ESG_WORKER_NODE_AMI_ID}" >> message.txt
-          echo "  Name: ${ESG_WORKER_NODE_AMI_DISPLAY_NAME}" >> message.txt
-          echo "  Created: ${ESG_WORKER_NODE_AMI_DISPLAY_DATE}" >> message.txt
+          echo "  AMI ID: $${ESG_WORKER_NODE_AMI_ID}" >> message.txt
+          echo "  Name: $${ESG_WORKER_NODE_AMI_DISPLAY_NAME}" >> message.txt
+          echo "  Created: $${ESG_WORKER_NODE_AMI_DISPLAY_DATE}" >> message.txt
           echo "" >> message.txt
           echo "Build Information:" >> message.txt
-          echo "- Project: ${PROJECT_NAME}" >> message.txt
-          echo "- Build Number: ${BUILD_NUM}" >> message.txt
-          echo "- Time: ${CURRENT_UTC_TIME}" >> message.txt
-          echo "- Logs: ${LOG_URL}" >> message.txt
+          echo "- Project: $${PROJECT_NAME}" >> message.txt
+          echo "- Build Number: $${BUILD_NUM}" >> message.txt
+          echo "- Time: $${CURRENT_UTC_TIME}" >> message.txt
+          echo "- Logs: $${LOG_URL}" >> message.txt
           echo "" >> message.txt
           echo "Please check the logs for more details." >> message.txt
           echo "" >> message.txt
