@@ -2,6 +2,12 @@
 ########################################################################################################################
 
 resource "time_sleep" "wait_15_seconds" {
+  count = var.automatic_update_enabled ? 1 : 0
+  
+  depends_on = [
+    aws_iam_role_policy.codebuild_sns_management
+  ]
+  
   create_duration = "15s"
 }
 
@@ -15,8 +21,7 @@ resource "aws_sns_topic" "success" {
   }
 
   depends_on = [
-    time_sleep.wait_15_seconds,
-    aws_iam_role_policy.codebuild_sns_management[0]
+    time_sleep.wait_15_seconds
   ]
 }
 
@@ -30,8 +35,7 @@ resource "aws_sns_topic" "failure" {
   }
 
   depends_on = [
-    time_sleep.wait_15_seconds,
-    aws_iam_role_policy.codebuild_sns_management[0]
+    time_sleep.wait_15_seconds
   ]
 }
 
@@ -69,8 +73,7 @@ resource "aws_secretsmanager_secret" "sns_topics" {
   }
 
   depends_on = [
-    time_sleep.wait_15_seconds,
-    aws_iam_role_policy.codebuild_sns_management[0]
+    time_sleep.wait_15_seconds
   ]
 }
 
