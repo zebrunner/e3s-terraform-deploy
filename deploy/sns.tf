@@ -1,6 +1,10 @@
 # SNS Topics for Build Notifications
 ########################################################################################################################
 
+resource "time_sleep" "wait_15_seconds" {
+  create_duration = "15s"
+}
+
 resource "aws_sns_topic" "success" {
   count = var.automatic_update_enabled ? 1 : 0
   name  = var.notification_sns_topic_success
@@ -9,6 +13,11 @@ resource "aws_sns_topic" "success" {
     Name        = var.notification_sns_topic_success
     Purpose     = "CodeBuild Success Notifications"
   }
+
+  depends_on = [
+    time_sleep.wait_15_seconds,
+    aws_iam_role_policy.codebuild_sns_management[0]
+  ]
 }
 
 resource "aws_sns_topic" "failure" {
@@ -19,6 +28,11 @@ resource "aws_sns_topic" "failure" {
     Name        = var.notification_sns_topic_failure
     Purpose     = "CodeBuild Failure Notifications"
   }
+
+  depends_on = [
+    time_sleep.wait_15_seconds,
+    aws_iam_role_policy.codebuild_sns_management[0]
+  ]
 }
 
 # Email Subscriptions for Success Topic
@@ -53,6 +67,11 @@ resource "aws_secretsmanager_secret" "sns_topics" {
     Name        = var.notification_sns_topic_secret_name
     Purpose     = "CodeBuild Notifications"
   }
+
+  depends_on = [
+    time_sleep.wait_15_seconds,
+    aws_iam_role_policy.codebuild_sns_management[0]
+  ]
 }
 
 resource "aws_secretsmanager_secret_version" "sns_topics" {
