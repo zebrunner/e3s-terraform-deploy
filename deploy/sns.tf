@@ -1,14 +1,24 @@
 # SNS Topics for Build Notifications
 ########################################################################################################################
 
-resource "time_sleep" "wait_15_seconds" {
+resource "terraform_data" "always_run" {
+  count = var.automatic_update_enabled ? 1 : 0
+  
+  input = timestamp()
+}
+
+resource "time_sleep" "wait_25_seconds" {
   count = var.automatic_update_enabled ? 1 : 0
   
   depends_on = [
     aws_iam_role_policy.codebuild_sns_management
   ]
   
-  create_duration = "15s"
+  create_duration = "25s"
+  
+  lifecycle {
+    replace_triggered_by = [terraform_data.always_run]
+  }
 }
 
 resource "aws_sns_topic" "success" {
@@ -21,7 +31,7 @@ resource "aws_sns_topic" "success" {
   }
 
   depends_on = [
-    time_sleep.wait_15_seconds
+    time_sleep.wait_25_seconds
   ]
 }
 
@@ -35,7 +45,7 @@ resource "aws_sns_topic" "failure" {
   }
 
   depends_on = [
-    time_sleep.wait_15_seconds
+    time_sleep.wait_25_seconds
   ]
 }
 
@@ -47,6 +57,9 @@ resource "aws_sns_topic_subscription" "success_emails" {
   topic_arn = aws_sns_topic.success[0].arn
   protocol  = "email"
   endpoint  = var.notification_email_success[count.index]
+  depends_on = [
+    time_sleep.wait_25_seconds
+  ]
 }
 
 # Email Subscriptions for Failure Topic
@@ -57,6 +70,9 @@ resource "aws_sns_topic_subscription" "failure_emails" {
   topic_arn = aws_sns_topic.failure[0].arn
   protocol  = "email"
   endpoint  = var.notification_email_failure[count.index]
+  depends_on = [
+    time_sleep.wait_25_seconds
+  ]
 }
 
 # Secrets Manager Secret with SNS Topic ARNs
@@ -73,7 +89,7 @@ resource "aws_secretsmanager_secret" "sns_topics" {
   }
 
   depends_on = [
-    time_sleep.wait_15_seconds
+    time_sleep.wait_25_seconds
   ]
 }
 
@@ -84,6 +100,9 @@ resource "aws_secretsmanager_secret_version" "sns_topics" {
     SUCCESS_SNS_TOPIC_ARN = aws_sns_topic.success[0].arn
     FAILURE_SNS_TOPIC_ARN = aws_sns_topic.failure[0].arn
   })
+  depends_on = [
+    time_sleep.wait_25_seconds
+  ]
 }
 
 # Local File with AMI Information
