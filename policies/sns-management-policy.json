@@ -63,16 +63,6 @@
                 "arn:aws:sns:${region}:${account}:${notification_sns_topic_success}",
                 "arn:aws:sns:${region}:${account}:${notification_sns_topic_failure}"
             ]
-        },
-        {
-            "Sid": "SecretsManagerSNS",
-            "Effect": "Allow",
-            "Action": [
-                "secretsmanager:GetSecretValue"
-            ],
-            "Resource": [
-                "arn:aws:secretsmanager:${region}:${account}:secret:${notification_sns_topic_secret_name}*"
-            ]
         }
     ]
 }
