@@ -75,19 +75,12 @@ resource "aws_sns_topic_subscription" "failure_emails" {
   ]
 }
 
-# Secrets Manager Secret with SNS Topic ARNs
+# Secrets Manager Secret with SNS Topic ARNs (created manually)
 ########################################################################################################################
 
-resource "aws_secretsmanager_secret" "sns_topics" {
-  count       = var.automatic_update_enabled ? 1 : 0
-  name        = var.notification_sns_topic_secret_name
-  description = "SNS Topic ARNs for CodeBuild success and failure notifications"
-
-  tags = {
-    Name        = var.notification_sns_topic_secret_name
-    Purpose     = "CodeBuild Notifications"
-  }
-
+data "aws_secretsmanager_secret" "sns_topics" {
+  count = var.automatic_update_enabled ? 1 : 0
+  name  = var.notification_sns_topic_secret_name
   depends_on = [
     time_sleep.wait_25_seconds
   ]
@@ -95,7 +88,7 @@ resource "aws_secretsmanager_secret" "sns_topics" {
 
 resource "aws_secretsmanager_secret_version" "sns_topics" {
   count     = var.automatic_update_enabled ? 1 : 0
-  secret_id = aws_secretsmanager_secret.sns_topics[0].id
+  secret_id = data.aws_secretsmanager_secret.sns_topics[0].id
   secret_string = jsonencode({
     SUCCESS_SNS_TOPIC_ARN = aws_sns_topic.success[0].arn
     FAILURE_SNS_TOPIC_ARN = aws_sns_topic.failure[0].arn
