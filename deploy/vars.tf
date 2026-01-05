@@ -180,6 +180,49 @@ variable "automatic_update_policy_3_arn" {
   default = ""
 }
 
+# SNS Configuration
+########################################################################################################################
+
+variable "notification_sns_topic_secret_name" {
+  type        = string
+  description = "Name of the AWS Secrets Manager secret containing SNS topic ARNs (SUCCESS_SNS_TOPIC_ARN and FAILURE_SNS_TOPIC_ARN)"
+  default     = "esg/automatic-update/sns-topics"
+}
+
+variable "notification_sns_topic_success" {
+  type        = string
+  description = "Name of the SNS topic for successful build notifications"
+  default     = "build-success"
+}
+
+variable "notification_sns_topic_failure" {
+  type        = string
+  description = "Name of the SNS topic for failed build notifications"
+  default     = "build-failure"
+}
+
+variable "notification_email_success" {
+  type        = list(string)
+  description = "List of email addresses to subscribe to success notifications"
+  default     = []
+
+  validation {
+    condition     = alltrue([for email in var.notification_email_success : can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", email))])
+    error_message = "All email addresses must be valid email format."
+  }
+}
+
+variable "notification_email_failure" {
+  type        = list(string)
+  description = "List of email addresses to subscribe to failure notifications"
+  default     = []
+
+  validation {
+    condition     = alltrue([for email in var.notification_email_failure : can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", email))])
+    error_message = "All email addresses must be valid email format."
+  }
+}
+
 ########################################################################################################################
 
 locals {

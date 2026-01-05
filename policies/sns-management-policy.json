@@ -1,0 +1,68 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "SecretsManagerManagement",
+            "Effect": "Allow",
+            "Action": [
+                "secretsmanager:CreateSecret",
+                "secretsmanager:DeleteSecret",
+                "secretsmanager:DescribeSecret",
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:GetResourcePolicy",
+                "secretsmanager:PutSecretValue",
+                "secretsmanager:UpdateSecret",
+                "secretsmanager:TagResource",
+                "secretsmanager:UntagResource",
+                "secretsmanager:ListSecrets"
+            ],
+            "Resource": [
+                "arn:aws:secretsmanager:${region}:${account}:secret:${notification_sns_topic_secret_name}*"
+            ]
+        },
+        {
+            "Sid": "SNSTopicManagement",
+            "Effect": "Allow",
+            "Action": [
+                "sns:CreateTopic",
+                "sns:DeleteTopic",
+                "sns:GetTopicAttributes",
+                "sns:SetTopicAttributes",
+                "sns:ListTagsForResource",
+                "sns:TagResource",
+                "sns:UntagResource",
+                "sns:ListTopics"
+            ],
+            "Resource": [
+                "arn:aws:sns:${region}:${account}:${notification_sns_topic_success}",
+                "arn:aws:sns:${region}:${account}:${notification_sns_topic_failure}"
+            ]
+        },
+        {
+            "Sid": "SNSSubscriptionManagement",
+            "Effect": "Allow",
+            "Action": [
+                "sns:Subscribe",
+                "sns:Unsubscribe",
+                "sns:ListSubscriptionsByTopic",
+                "sns:GetSubscriptionAttributes",
+                "sns:SetSubscriptionAttributes"
+            ],
+            "Resource": [
+                "arn:aws:sns:${region}:${account}:${notification_sns_topic_success}",
+                "arn:aws:sns:${region}:${account}:${notification_sns_topic_failure}"
+            ]
+        },
+        {
+            "Sid": "SNSPublish",
+            "Effect": "Allow",
+            "Action": [
+                "sns:Publish"
+            ],
+            "Resource": [
+                "arn:aws:sns:${region}:${account}:${notification_sns_topic_success}",
+                "arn:aws:sns:${region}:${account}:${notification_sns_topic_failure}"
+            ]
+        }
+    ]
+}

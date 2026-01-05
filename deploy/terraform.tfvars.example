@@ -34,7 +34,7 @@ spot_price = {
 }
 
 zebrunner = {
-  host = "https://zebruner.com"
+  host = "https://zebrunner.com"
   user = "user"
   pass = "pass"
 }
@@ -43,3 +43,20 @@ zebrunner = {
 # Maximum 165 CIDR blocks (hard limit: 55 rules per security group × 3 security groups)
 # Example: ["203.0.113.0/24", "198.51.100.50/32"]
 allowed_e3s_server_cidr_blocks = ["0.0.0.0/0"]
+
+# AWS Secrets Manager secret name for SNS topic ARNs
+notification_sns_topic_secret_name = "esg/automatic-update/sns-topics"
+
+# SNS Topic names
+notification_sns_topic_success = "build-success"
+notification_sns_topic_failure = "build-failure"
+
+# Email subscriptions for success notifications
+notification_email_success = [
+  "vadym.spitsyn.solvd@gmail.com"
+]
+
+# Email subscriptions for failure notifications (can be the same or different from success)
+notification_email_failure = [
+  "vspitsyn@solvd.com"
+]
