@@ -51,11 +51,7 @@ notification_email_failure = [
 
 ---
 
-## Troubleshooting: IAM Policy for CodeBuild
-
-If you encounter permission errors during deployment, you may need to manually attach the SNS management policy to your CodeBuild/Terraform IAM role.
-
-### 1. Edit the Policy File
+## Step 3: Edit the Policy File
 
 Open [policies/sns-management-policy.json](../policies/sns-management-policy.json) and replace the following placeholders with your values:
 
@@ -67,20 +63,38 @@ Open [policies/sns-management-policy.json](../policies/sns-management-policy.jso
 | `${notification_sns_topic_success}` | Success topic name | `build-success` |
 | `${notification_sns_topic_failure}` | Failure topic name | `build-failure` |
 
-### 2. Create the IAM Policy
+---
+
+## Step 4: Attach IAM Policy to Terraform Role
+
+Create and attach the SNS management policy to your Terraform IAM role in AWS.
+
+### 4.1. Create the IAM Policy
 
 ```bash
 aws iam create-policy \
-  --policy-name codebuild-sns-management \
+  --policy-name sns-management-policy \
   --policy-document file://policies/sns-management-policy.json
 ```
 
-### 3. Attach the Policy to CodeBuild Role
+### 4.2. Attach the Policy to Terraform Role
+
+```bash
+aws iam attach-role-policy \
+  --role-name <your-terraform-iam-role> \
+  --policy-arn arn:aws:iam::<account-id>:policy/sns-management-policy
+```
+
+---
+
+## Troubleshooting: CodeBuild Permission Errors
+
+If you encounter permission errors when running in CodeBuild, attach the same policy to your CodeBuild service role:
 
 ```bash
 aws iam attach-role-policy \
   --role-name <your-codebuild-role-name> \
-  --policy-arn arn:aws:iam::<account-id>:policy/codebuild-sns-management
+  --policy-arn arn:aws:iam::<account-id>:policy/sns-management-policy
 ```
 
 ---
