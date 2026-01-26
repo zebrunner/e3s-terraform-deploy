@@ -42,6 +42,13 @@ Configured aws profile with the following policies:
     * `{dynamodb_table}` - Dynamodb table name, which will support terraform lock mechanism
     * `{github_token_secret}` - Name of the Secret in Secrets Manager that stores GitHub access token to check out this repo
 
+2. If you enable automatic updates (`automatic_update_enabled = true`), you must prepare [sns-management-policy.json](policies/sns-management-policy.json) by replacing the following placeholders:
+    * `${region}` - AWS region
+    * `${account}` - AWS account id
+    * `${notification_sns_topic_secret_name}` - Secrets Manager secret name that stores SNS topic ARNs
+    * `${notification_sns_topic_success}` - SNS topic name for successful builds
+    * `${notification_sns_topic_failure}` - SNS topic name for failed builds
+
 ## Deploy steps
 
 ### 1. Clone repository and navigate to deploy folder
@@ -120,7 +127,13 @@ terraform init -backend-config=config.s3.tfbackend
 terraform apply
 ```
 
-### 6. [Optional] User policices.
+### 6. [Optional] User policies
 
-For user's use could be created [e3s-manage](policices/e3s-manage-policy.json)
-and [e3s-monitor](policices/e3s-monitor-policy.json) policies.
+For user's use could be created [e3s-manage](policies/e3s-manage-policy.json)
+and [e3s-monitor](policies/e3s-monitor-policy.json) policies.
+
+### 7. AWS SNS setup (required for automatic updates)
+
+Before running `terraform apply` with `automatic_update_enabled = true`, complete:
+
+- [SNS Notifications Setup](docs/SNS_NOTIFICATIONS_SETUP.md)
