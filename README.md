@@ -48,7 +48,8 @@ Configured aws profile with the following policies:
     * `${notification_sns_topic_secret_name}` - Secrets Manager secret name that stores SNS topic ARNs
     * `${notification_sns_topic_success}` - SNS topic name for successful builds
     * `${notification_sns_topic_failure}` - SNS topic name for failed builds
-
+Detailed SNS setup guide - [SNS Notifications Setup](docs/SNS_NOTIFICATIONS_SETUP.md)
+  
 ## Deploy steps
 
 ### 1. Clone repository and navigate to deploy folder
@@ -131,9 +132,3 @@ terraform apply
 
 For user's use could be created [e3s-manage](policies/e3s-manage-policy.json)
 and [e3s-monitor](policies/e3s-monitor-policy.json) policies.
-
-### 7. AWS SNS setup (required for automatic updates)
-
-Before running `terraform apply` with `automatic_update_enabled = true`, complete:
-
-- [SNS Notifications Setup](docs/SNS_NOTIFICATIONS_SETUP.md)
