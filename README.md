@@ -48,6 +48,7 @@ Configured aws profile with the following policies:
     * `${notification_sns_topic_secret_name}` - Secrets Manager secret name that stores SNS topic ARNs
     * `${notification_sns_topic_success}` - SNS topic name for successful builds
     * `${notification_sns_topic_failure}` - SNS topic name for failed builds
+    
 Detailed SNS setup guide - [SNS Notifications Setup](docs/SNS_NOTIFICATIONS_SETUP.md)
   
 ## Deploy steps
