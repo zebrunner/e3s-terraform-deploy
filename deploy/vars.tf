@@ -165,6 +165,11 @@ variable "automatic_update_config_s3_tfbackend_secret_name" {
   default = "e3s/automatic-update/config.s3.tfbackend"
 }
 
+variable "terraform_state_bucket" {
+  type    = string
+  default = ""
+}
+
 variable "automatic_update_policy_1_arn" {
   type    = string
   default = ""

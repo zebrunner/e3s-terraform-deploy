@@ -108,6 +108,9 @@ git clone https://github.com/zebrunner/e3s-terraform-deploy.git && cd ./e3s-terr
     ```
 * `spot_price` - (object) spot price per 1 weight in autoscaling group. If not specified, on-demand instances are used instead. Fields: `linux` and `windows`
 * `zebrunner` - (object) Configuration of Zebrunner integration. Fields: `host`, `user`, and `pass`.
+* `terraform_state_bucket` - Name of the bucket that stores terraform state (the `bucket` value from `config.s3.tfbackend`).
+  Required when `automatic_update_enabled` is `true`: it grants the S3 gateway endpoint access to the state, without which
+  `terraform init` fails inside CodeBuild. Default value: `""`.
 
 ### 3. Create and configure config.{service}.tfbackend file.
 

@@ -49,7 +49,15 @@ resource "aws_vpc_endpoint" "s3_gateway" {
   service_name      = format("com.amazonaws.%s.s3", var.region)
   vpc_endpoint_type = "Gateway"
   policy = templatefile("./iam_data/s3-endpoint-policy.json", {
-    bucket_name = var.s3_bucket.name
-    region      = var.region
+    bucket_name       = var.s3_bucket.name
+    state_bucket_name = var.terraform_state_bucket
+    region            = var.region
   })
+
+  lifecycle {
+    precondition {
+      condition     = !var.automatic_update_enabled || var.terraform_state_bucket != ""
+      error_message = "terraform_state_bucket must be set to the bucket from config.s3.tfbackend when automatic_update_enabled is true, otherwise terraform init fails inside CodeBuild."
+    }
+  }
 }

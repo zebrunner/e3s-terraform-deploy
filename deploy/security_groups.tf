@@ -197,6 +197,15 @@ resource "aws_vpc_security_group_ingress_rule" "cloudwatch" {
   referenced_security_group_id = aws_security_group.e3s_agent.id
 }
 
+resource "aws_vpc_security_group_ingress_rule" "cloudwatch_from_codebuild" {
+  count                        = var.enable_cloudwatch && var.automatic_update_enabled ? 1 : 0
+  security_group_id            = aws_security_group.cloudwatch[0].id
+  ip_protocol                  = "tcp"
+  from_port                    = 443
+  to_port                      = 443
+  referenced_security_group_id = aws_security_group.codebuild[0].id
+}
+
 resource "aws_vpc_security_group_egress_rule" "cloudwatch_outbound_traffic_ipv4" {
   count             = var.enable_cloudwatch ? 1 : 0
   security_group_id = aws_security_group.cloudwatch[0].id
