@@ -39,6 +39,10 @@ zebrunner = {
   pass = "pass"
 }
 
+# Bucket holding terraform state (the "bucket" value from config.s3.tfbackend).
+# Required when automatic_update_enabled = true, so the S3 gateway endpoint allows CodeBuild to read/write the state.
+terraform_state_bucket = "e3s-terraform-test-state"
+
 # List of CIDR blocks allowed to access the e3s server (ALB and router ports)
 # Maximum 165 CIDR blocks (hard limit: 55 rules per security group × 3 security groups)
 # Example: ["203.0.113.0/24", "198.51.100.50/32"]

@@ -28,18 +28,6 @@
             ]
         },
         {
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": [
-                "s3:PutObject",
-                "s3:GetObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::e3s-terraform-test-state",
-                "arn:aws:s3:::e3s-terraform-test-state/*"
-            ]
-        },
-        {
             "Sid": "yum's repo file stored at s3",
             "Effect": "Allow",
             "Principal": "*",
@@ -50,6 +38,20 @@
                 "arn:aws:s3:::amazonlinux-2-repos-${region}/*",
                 "arn:aws:s3:::al2023-repos-${region}-*"
             ]
-        }
+        }%{ if state_bucket_name != "" },
+        {
+            "Sid": "TerraformState",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${state_bucket_name}",
+                "arn:aws:s3:::${state_bucket_name}/*"
+            ]
+        }%{ endif }
     ]
 }
