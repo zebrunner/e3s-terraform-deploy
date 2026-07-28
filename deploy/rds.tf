@@ -37,4 +37,8 @@ resource "aws_db_instance" "postgres" {
   delete_automated_backups = true
 
   vpc_security_group_ids = [aws_security_group.rds.id]
+
+  tags = {
+    "data-classification" = "internal"
+  }
 }

@@ -193,7 +193,8 @@
             "Action": [
                 "codebuild:CreateProject",
                 "codebuild:DeleteProject",
-                "codebuild:BatchGetProjects"
+                "codebuild:BatchGetProjects",
+                "codebuild:UpdateProject"
             ],
             "Resource": [
                 "arn:aws:codebuild:{region}:{account}:project/{resource_prefix}-automatic-update"

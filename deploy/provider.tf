@@ -12,11 +12,8 @@ terraform {
 }
 
 provider "aws" {
-  region  = var.region
+  region = var.region
   default_tags {
-    tags = {
-      Environment = var.resources_prefix
-      Application = "e3s"
-    }
+    tags = local.e3s_common_tags
   }
 }

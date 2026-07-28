@@ -226,6 +226,13 @@ variable "notification_email_failure" {
 ########################################################################################################################
 
 locals {
+  e3s_common_tags = {
+    Environment = var.resources_prefix
+    Application = "e3s"
+    project     = "e3s"
+    tf_managed  = "https://github.com/zebrunner/e3s-terraform-deploy"
+  }
+
   e3s_server_instance_name = join("-", [var.resources_prefix, "server"])
   e3s_agent_instance_name  = join("-", [var.resources_prefix, "agent"])
 
