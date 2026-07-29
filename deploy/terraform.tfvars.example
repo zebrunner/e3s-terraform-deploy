@@ -39,6 +39,13 @@ zebrunner = {
   pass = "pass"
 }
 
+# Extra tags applied to every e3s resource, on top of Environment/Application/project/tf_managed.
+# Keys matching those built-in tags override them.
+extra_tags = {
+  owner       = "qa-team"
+  cost_center = "12345"
+}
+
 # List of CIDR blocks allowed to access the e3s server (ALB and router ports)
 # Maximum 165 CIDR blocks (hard limit: 55 rules per security group × 3 security groups)
 # Example: ["203.0.113.0/24", "198.51.100.50/32"]

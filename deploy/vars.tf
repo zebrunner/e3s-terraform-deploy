@@ -128,6 +128,12 @@ variable "zebrunner" {
   }
 }
 
+variable "extra_tags" {
+  type        = map(string)
+  description = "Additional tags applied to all e3s resources. Keys matching the built-in tags (Environment, Application, project, tf_managed) override them"
+  default     = {}
+}
+
 ########################################################################################################################
 
 variable "automatic_update_enabled" {
@@ -226,12 +232,12 @@ variable "notification_email_failure" {
 ########################################################################################################################
 
 locals {
-  e3s_common_tags = {
+  e3s_common_tags = merge({
     Environment = var.resources_prefix
     Application = "e3s"
     project     = "e3s"
     tf_managed  = "https://github.com/zebrunner/e3s-terraform-deploy"
-  }
+  }, var.extra_tags)
 
   e3s_server_instance_name = join("-", [var.resources_prefix, "server"])
   e3s_agent_instance_name  = join("-", [var.resources_prefix, "agent"])
