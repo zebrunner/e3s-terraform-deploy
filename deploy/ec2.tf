@@ -16,7 +16,7 @@ data "aws_ami" "zbr_windows" {
   owners      = ["aws-marketplace"]
   filter {
     name   = "name"
-    values = ["Zebrunner ESG Agent *"]
+    values = ["Zebrunner-ESG-Agent-Windows*"]
   }
   filter {
     name   = "platform"
