@@ -85,7 +85,7 @@ resource "aws_launch_template" "e3s_linux" {
 
   tag_specifications {
     resource_type = "volume"
-    tags          = local.e3s_common_tags
+    tags          = local.e3s_volume_tags
   }
 
   depends_on = [aws_iam_instance_profile.e3s_agent]
@@ -140,7 +140,7 @@ resource "aws_launch_template" "e3s_windows" {
 
   tag_specifications {
     resource_type = "volume"
-    tags          = local.e3s_common_tags
+    tags          = local.e3s_volume_tags
   }
 
   depends_on = [aws_iam_instance_profile.e3s_agent]

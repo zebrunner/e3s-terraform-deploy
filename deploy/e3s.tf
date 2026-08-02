@@ -55,7 +55,7 @@ resource "aws_instance" "e3s_server" {
     Name = local.e3s_server_instance_name
   }
 
-  volume_tags = merge(local.e3s_common_tags, { Name = local.e3s_server_instance_name })
+  volume_tags = merge(local.e3s_volume_tags, { Name = local.e3s_server_instance_name })
 
   ebs_block_device {
     device_name           = "/dev/sda1"
