@@ -15,4 +15,8 @@ resource "aws_elasticache_serverless_cache" "redis" {
 
   subnet_ids         = [var.private_subnet_1_id, var.private_subnet_2_id]
   security_group_ids = [aws_security_group.redis.id]
+
+  tags = {
+    "data-classification" = local.e3s_data_tags["data-classification"]
+  }
 }

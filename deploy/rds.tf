@@ -39,6 +39,6 @@ resource "aws_db_instance" "postgres" {
   vpc_security_group_ids = [aws_security_group.rds.id]
 
   tags = {
-    "data-classification" = "internal"
+    "data-classification" = local.e3s_data_tags["data-classification"]
   }
 }

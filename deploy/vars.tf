@@ -239,9 +239,11 @@ locals {
     tf_managed  = "https://github.com/zebrunner/e3s-terraform-deploy"
   }, var.extra_tags)
 
-  e3s_volume_tags = merge(local.e3s_common_tags, {
-    "data-classification" = "internal"
+  e3s_data_tags = merge(local.e3s_common_tags, {
+    "data-classification" = "Internal"
   })
+
+  e3s_volume_tags = local.e3s_data_tags
 
   e3s_server_instance_name = join("-", [var.resources_prefix, "server"])
   e3s_agent_instance_name  = join("-", [var.resources_prefix, "agent"])
