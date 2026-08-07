@@ -37,15 +37,6 @@ resource "aws_s3_bucket" "main" {
   }
 }
 
-# Existing buckets (s3_bucket.exists = true) are not managed by aws_s3_bucket above.
-# aws_s3_bucket_tagging replaces the bucket's tag set entirely.
-resource "aws_s3_bucket_tagging" "existing_assets" {
-  count  = var.s3_bucket.exists ? 1 : 0
-  bucket = var.s3_bucket.name
-
-  tags = local.e3s_data_tags
-}
-
 resource "aws_s3_bucket_policy" "vpc_restrict_policy" {
   count  = var.s3_bucket.exists ? 0 : 1
   bucket = var.s3_bucket.name
