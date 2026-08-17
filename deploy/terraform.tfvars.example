@@ -51,6 +51,9 @@ extra_tags = {
 # Example: ["203.0.113.0/24", "198.51.100.50/32"]
 allowed_e3s_server_cidr_blocks = ["0.0.0.0/0"]
 
+# AWS Secrets Manager secret name for Iterable prod read-only API key
+iterable_readonly_secret_name = "qa/iterable/prod-readonly-api-key"
+
 # AWS Secrets Manager secret name for SNS topic ARNs
 notification_sns_topic_secret_name = "esg/automatic-update/sns-topics"
 

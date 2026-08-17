@@ -9,6 +9,17 @@
             "Resource": [
                 "arn:aws:s3:::${bucket_name}/*"
             ]
+        },
+        {
+            "Sid": "IterableReadonlySecret",
+            "Effect": "Allow",
+            "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret"
+            ],
+            "Resource": [
+                "arn:aws:secretsmanager:${region}:${account}:secret:${iterable_readonly_secret_name}*"
+            ]
         }
     ]
 }
