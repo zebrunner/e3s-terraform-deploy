@@ -123,6 +123,7 @@
                 "rds:DescribeDBSubnetGroups",
                 "rds:DeleteDBSubnetGroup",
                 "rds:CreateDBInstance",
+                "rds:ModifyDBInstance",
                 "rds:DeleteDBInstance"
             ],
             "Resource": [
