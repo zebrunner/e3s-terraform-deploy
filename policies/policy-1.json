@@ -29,6 +29,8 @@
             "Effect": "Allow",
             "Action": [
                 "ecs:TagResource",
+                "ecs:UntagResource",
+                "ecs:ListTagsForResource",
                 "ecs:CreateCluster",
                 "ecs:PutClusterCapacityProviders",
                 "ecs:DescribeClusters",

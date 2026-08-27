@@ -31,6 +31,10 @@ resource "aws_s3_bucket" "main" {
   count         = var.s3_bucket.exists ? 0 : 1
   bucket        = var.s3_bucket.name
   force_destroy = true
+
+  tags = {
+    "data-classification" = local.e3s_data_tags["data-classification"]
+  }
 }
 
 resource "aws_s3_bucket_policy" "vpc_restrict_policy" {

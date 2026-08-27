@@ -16,7 +16,7 @@ data "aws_ami" "zbr_windows" {
   owners      = ["aws-marketplace"]
   filter {
     name   = "name"
-    values = ["Zebrunner ESG Agent *"]
+    values = ["Zebrunner-ESG-Agent-Windows*"]
   }
   filter {
     name   = "platform"
@@ -77,6 +77,17 @@ resource "aws_launch_template" "e3s_linux" {
     }
   ))
 
+  # default_tags do not reach tag_specifications; instances and volumes are tagged only from here.
+  tag_specifications {
+    resource_type = "instance"
+    tags          = local.e3s_common_tags
+  }
+
+  tag_specifications {
+    resource_type = "volume"
+    tags          = local.e3s_volume_tags
+  }
+
   depends_on = [aws_iam_instance_profile.e3s_agent]
 }
 
@@ -121,6 +132,16 @@ resource "aws_launch_template" "e3s_windows" {
     "./ec2_data/windows_user_data.ps1",
     { cluster_name = local.e3s_cluster_name, cidr_block = var.vpc_cidr_block }
   ))
+
+  tag_specifications {
+    resource_type = "instance"
+    tags          = local.e3s_common_tags
+  }
+
+  tag_specifications {
+    resource_type = "volume"
+    tags          = local.e3s_volume_tags
+  }
 
   depends_on = [aws_iam_instance_profile.e3s_agent]
 }

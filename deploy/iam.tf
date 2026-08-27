@@ -114,7 +114,10 @@ resource "aws_iam_role_policy" "e3s_task" {
   name   = local.e3s_task_policy_name
   role   = aws_iam_role.e3s_task.id
   policy = templatefile("./iam_data/task-policy.json", {
-    bucket_name = var.s3_bucket.name
+    bucket_name                     = var.s3_bucket.name
+    region                          = var.region
+    account                         = data.aws_caller_identity.current.account_id
+    iterable_readonly_secret_name   = var.iterable_readonly_secret_name
   })
 }
 

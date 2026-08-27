@@ -44,8 +44,24 @@ resource "aws_autoscaling_group" "linux" {
   force_delete            = true
   service_linked_role_arn = format("arn:aws:iam::%s:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling", data.aws_caller_identity.current.account_id)
 
+  dynamic "tag" {
+    for_each = local.e3s_common_tags
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = false
+    }
+  }
+
+  # ECS adds this when the ASG joins a capacity provider; undeclared means Terraform removes it.
+  tag {
+    key                 = "AmazonECSManaged"
+    value               = ""
+    propagate_at_launch = true
+  }
+
   lifecycle {
-    ignore_changes = [desired_capacity, min_size, max_size, tag]
+    ignore_changes = [desired_capacity, min_size, max_size]
   }
 }
 
@@ -100,8 +116,23 @@ resource "aws_autoscaling_group" "windows" {
     value               = local.e3s_agent_instance_name
   }
 
+  dynamic "tag" {
+    for_each = local.e3s_common_tags
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = false
+    }
+  }
+
+  tag {
+    key                 = "AmazonECSManaged"
+    value               = ""
+    propagate_at_launch = true
+  }
+
   lifecycle {
-    ignore_changes = [desired_capacity, min_size, max_size, tag]
+    ignore_changes = [desired_capacity, min_size, max_size]
   }
 }
 
