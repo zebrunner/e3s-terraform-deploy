@@ -50,6 +50,14 @@ Configured aws profile with the following policies:
     * `${notification_sns_topic_failure}` - SNS topic name for failed builds
     
 Detailed SNS setup guide - [SNS Notifications Setup](docs/SNS_NOTIFICATIONS_SETUP.md)
+
+3. If you enable the internal Nexus Maven cache (`nexus_enabled = true`), you must prepare [nexus-deploy-policy.json](policies/nexus-deploy-policy.json) by replacing the following placeholders:
+    * `{resource_prefix}` - Prefix for almost all e3s aws resources
+    * `{region}` - AWS region
+    * `{account}` - AWS account id
+    * `{nexus_bucket_name}` - Name of the S3 bucket that stores Nexus blobs (`nexus_s3_bucket.name`)
+
+Detailed Nexus setup guide - [Nexus Maven Cache Setup](docs/NEXUS_CACHE_SETUP.md)
   
 ## Deploy steps
 
