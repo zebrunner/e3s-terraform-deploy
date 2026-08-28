@@ -31,15 +31,35 @@ resource "aws_lb" "main" {
   idle_timeout       = 630
 }
 
-resource "aws_lb_listener" "main" {
+resource "aws_lb_listener" "http" {
+  count             = var.cert == "" ? 1 : 0
   load_balancer_arn = aws_lb.main.arn
+  port              = 80
+  protocol          = "HTTP"
 
-  # Be aware of bug (terrafom is unable to flush ssl_policy field on http switch): 
-  # https://github.com/hashicorp/terraform-provider-aws/issues/1851
-  port            = var.cert == "" ? 80 : 443
-  protocol        = var.cert == "" ? "HTTP" : "HTTPS"
-  ssl_policy      = var.cert == "" ? "" : "ELBSecurityPolicy-TLS13-1-2-2021-06"
-  certificate_arn = var.cert
+  default_action {
+    type  = "forward"
+    order = 1
+    forward {
+      target_group {
+        arn    = aws_lb_target_group.main.arn
+        weight = 1
+      }
+      stickiness {
+        enabled  = false
+        duration = 3600
+      }
+    }
+  }
+}
+
+resource "aws_lb_listener" "https" {
+  count             = var.cert == "" ? 0 : 1
+  load_balancer_arn = aws_lb.main.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  certificate_arn   = var.cert
 
   default_action {
     type  = "forward"
