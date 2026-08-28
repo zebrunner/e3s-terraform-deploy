@@ -204,9 +204,7 @@ resource "aws_instance" "nexus" {
     admin_password   = var.nexus_admin_password
   })
 
-  depends_on = [aws_s3_bucket.nexus]
+  user_data_replace_on_change = true
 
-  lifecycle {
-    ignore_changes = [user_data]
-  }
+  depends_on = [aws_s3_bucket.nexus]
 }
