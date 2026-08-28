@@ -53,7 +53,8 @@ resource "aws_vpc_endpoint" "s3_gateway" {
   service_name      = format("com.amazonaws.%s.s3", var.region)
   vpc_endpoint_type = "Gateway"
   policy = templatefile("./iam_data/s3-endpoint-policy.json", {
-    bucket_name = var.s3_bucket.name
-    region      = var.region
+    bucket_name       = var.s3_bucket.name
+    region            = var.region
+    nexus_bucket_name = var.nexus_enabled ? var.nexus_s3_bucket.name : ""
   })
 }
