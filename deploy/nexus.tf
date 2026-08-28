@@ -9,6 +9,8 @@ resource "aws_s3_bucket" "nexus" {
   tags = {
     "data-classification" = local.e3s_data_tags["data-classification"]
   }
+
+  depends_on = [aws_vpc_endpoint.s3_gateway]
 }
 
 resource "aws_s3_bucket_public_access_block" "nexus" {
