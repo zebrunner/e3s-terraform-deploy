@@ -71,17 +71,16 @@ notification_email_failure = [
   "vspitsyn@solvd.com"
 ]
 
-########################################################################################################################
-# Nexus Maven cache (internal, private-only). Set nexus_enabled = true to deploy it.
-########################################################################################################################
 nexus_enabled          = false
 nexus_instance_type    = "m5.large"
 nexus_root_volume_size = 40
-# Pin a specific tag for reproducible deploys, e.g. "sonatype/nexus3:3.79.1"
-nexus_image = "sonatype/nexus3:latest"
+
+nexus_image = "sonatype/nexus3:3.95.3"
+
 nexus_s3_bucket = {
   exists = false
-  name   = "e3s-test-nexus-blobs"
+  name   = "e3s-nexus-blobs"
 }
+
 # Admin password for the Nexus UI/API. Empty = random password generated on first boot (read it via SSM).
 nexus_admin_password = ""
