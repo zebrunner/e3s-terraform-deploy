@@ -51,6 +51,11 @@ PASS=$(docker exec nexus cat /nexus-data/admin.password 2>/dev/null || cat /opt/
 AUTH=(-u "admin:$PASS")
 JSONH=(-H "Content-Type: application/json")
 
+# 0) accept the Community Edition EULA (nexus3 >= 3.70 returns 403 for all content until accepted)
+curl -s "$${AUTH[@]}" "$NEXUS/service/rest/v1/system/eula" \
+  | jq '.accepted=true' \
+  | curl -s "$${AUTH[@]}" "$${JSONH[@]}" -X POST "$NEXUS/service/rest/v1/system/eula" --data-binary @- || true
+
 # 1) S3 blob store (uses the instance role via the default AWS credential chain)
 curl -s "$${AUTH[@]}" "$${JSONH[@]}" -X POST "$NEXUS/service/rest/v1/blobstores/s3" --data-binary @- <<'JSON' || true
 {
