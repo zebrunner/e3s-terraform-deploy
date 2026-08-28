@@ -165,7 +165,7 @@ variable "nexus_root_volume_size" {
 variable "nexus_image" {
   type        = string
   description = "Sonatype Nexus Repository OSS container image. Pin a specific tag for reproducible deploys"
-  default     = "sonatype/nexus3:latest"
+  default     = "sonatype/nexus3:3.95.3"
 }
 
 variable "nexus_s3_bucket" {
