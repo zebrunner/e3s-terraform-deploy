@@ -188,7 +188,7 @@ variable "nexus_s3_bucket" {
 variable "nexus_maven_central_url" {
   type        = string
   description = "Upstream Maven repository that the Nexus proxy caches"
-  default     = "https://repo1.maven.apache.org/maven2/"
+  default     = "https://repo.maven.apache.org/maven2/"
 }
 
 variable "nexus_admin_password" {
