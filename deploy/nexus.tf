@@ -1,6 +1,38 @@
 # Internal Nexus Repository OSS that proxies and caches Maven Central.
 # Endpoint is private (internal ALB, HTTP). Artifact blobs are stored in S3.
 
+data "aws_ami" "ubuntu_24_04" {
+  most_recent = true
+
+  # Canonical
+  owners = ["099720109477"]
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "image-type"
+    values = ["machine"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+}
+
 resource "aws_s3_bucket" "nexus" {
   count         = var.nexus_enabled && !var.nexus_s3_bucket.exists ? 1 : 0
   bucket        = var.nexus_s3_bucket.name
@@ -170,7 +202,7 @@ resource "aws_lb_listener" "nexus" {
 
 resource "aws_instance" "nexus" {
   count                  = local.nexus_count
-  ami                    = data.aws_ami.ubuntu_22_04.id
+  ami                    = data.aws_ami.ubuntu_24_04.id
   instance_type          = var.nexus_instance_type
   iam_instance_profile   = aws_iam_instance_profile.nexus[0].name
   vpc_security_group_ids = [aws_security_group.nexus[0].id]

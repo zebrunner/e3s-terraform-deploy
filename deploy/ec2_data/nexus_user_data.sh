@@ -22,7 +22,11 @@ apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin do
 usermod -aG docker "$user"
 
 # nexus data dir (container runs as uid 200)
-mkdir -p /opt/nexus-data
+mkdir -p /opt/nexus-data/etc
+# S3 bucket ownership pre-check gives false negatives through the VPC gateway endpoint; disable it
+touch /opt/nexus-data/etc/nexus.properties
+grep -q '^nexus.blobstore.s3.ownership.check.disabled=' /opt/nexus-data/etc/nexus.properties \
+  || echo 'nexus.blobstore.s3.ownership.check.disabled=true' >> /opt/nexus-data/etc/nexus.properties
 chown -R 200:200 /opt/nexus-data
 
 docker run -d --restart unless-stopped --name nexus \
