@@ -94,7 +94,7 @@ resource "aws_instance" "e3s_server" {
     cache_port    = aws_elasticache_serverless_cache.redis.endpoint[0].port
   })
 
-  depends_on = [aws_ecs_cluster.e3s, aws_lb_listener.main]
+  depends_on = [aws_ecs_cluster.e3s, aws_lb_listener.http, aws_lb_listener.https]
 
   lifecycle {
     ignore_changes = [user_data]
