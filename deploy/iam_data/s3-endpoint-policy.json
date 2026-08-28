@@ -90,6 +90,16 @@
                 "arn:aws:s3:::${nexus_bucket_name}",
                 "arn:aws:s3:::${nexus_bucket_name}/*"
             ]
+        },
+        {
+            "Sid": "NexusS3OwnershipCheck",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:ListAllMyBuckets",
+                "s3:GetBucketLocation"
+            ],
+            "Resource": "*"
         }%{ endif }
     ]
 }
