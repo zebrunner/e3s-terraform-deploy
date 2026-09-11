@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Playwright ESG release : 2026-09-11
+
 user="ubuntu"
 e3s_path="/home/$user/tools/e3s"
 
