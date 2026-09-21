@@ -40,6 +40,15 @@
             ]
         },
         {
+            "Sid": "ECR image layers and configs are served from an AWS-owned S3 bucket",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": [
+                "arn:aws:s3:::prod-${region}-starport-layer-bucket/*"
+            ]
+        },
+        {
             "Sid": "yum's repo file stored at s3",
             "Effect": "Allow",
             "Principal": "*",
