@@ -37,6 +37,8 @@ resource "aws_instance" "e3s_server" {
   instance_type        = var.e3s_server_instance_type
   iam_instance_profile = aws_iam_instance_profile.e3s_server.name
 
+  user_data_replace_on_change = true
+
   vpc_security_group_ids = [aws_security_group.e3s_server.id, aws_security_group.e3s_server_2.id, aws_security_group.e3s_server_3.id]
   subnet_id              = var.private_subnet_1_id
 
@@ -95,8 +97,4 @@ resource "aws_instance" "e3s_server" {
   })
 
   depends_on = [aws_ecs_cluster.e3s, aws_lb_listener.main]
-
-  lifecycle {
-    ignore_changes = [user_data]
-  }
 }
