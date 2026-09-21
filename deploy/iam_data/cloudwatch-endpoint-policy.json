@@ -10,6 +10,22 @@
             ],
             "Effect": "Allow",
             "Resource": "*"
+        },
+        {
+            "Sid": "TerraformManagesLogGroups",
+            "Principal": "*",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:DeleteLogGroup",
+                "logs:DescribeLogGroups",
+                "logs:PutRetentionPolicy",
+                "logs:DeleteRetentionPolicy",
+                "logs:ListTagsForResource",
+                "logs:TagResource",
+                "logs:UntagResource"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
         }
     ]
 }

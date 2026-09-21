@@ -28,18 +28,6 @@
             ]
         },
         {
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": [
-                "s3:PutObject",
-                "s3:GetObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::e3s-terraform-test-state",
-                "arn:aws:s3:::e3s-terraform-test-state/*"
-            ]
-        },
-        {
             "Sid": "ECR image layers and configs are served from an AWS-owned S3 bucket",
             "Effect": "Allow",
             "Principal": "*",
@@ -98,6 +86,20 @@
             "Resource": [
                 "arn:aws:s3:::${nexus_bucket_name}",
                 "arn:aws:s3:::${nexus_bucket_name}/*"
+            ]
+        }%{ endif }%{ if state_bucket_name != "" },
+        {
+            "Sid": "TerraformState",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${state_bucket_name}",
+                "arn:aws:s3:::${state_bucket_name}/*"
             ]
         }%{ endif }
     ]
