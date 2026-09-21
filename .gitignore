@@ -2,3 +2,4 @@ terraform.tfstate
 terraform.tfstate.backup
 *.terraform
 *.plan
+use_aws_role.sh

@@ -141,6 +141,64 @@ variable "extra_tags" {
 }
 
 ########################################################################################################################
+# Nexus Maven cache (internal, private-only proxy for Maven Central)
+########################################################################################################################
+
+variable "nexus_enabled" {
+  type        = bool
+  description = "Deploy the internal Nexus Maven caching proxy (EC2 + internal ALB + S3 blob store)"
+  default     = false
+}
+
+variable "nexus_instance_type" {
+  type        = string
+  description = "EC2 instance type for the Nexus host. m5.large (2 vCPU / 8 GiB) fits ~15 concurrent executor tasks"
+  default     = "m5.large"
+}
+
+variable "nexus_root_volume_size" {
+  type        = number
+  description = "Root EBS size (GiB) for the Nexus host. Small, because artifact blobs live in S3, not on the instance"
+  default     = 40
+}
+
+variable "nexus_image" {
+  type        = string
+  description = "Sonatype Nexus Repository OSS container image. Pin a specific tag for reproducible deploys"
+  default     = "sonatype/nexus3:3.95.3"
+}
+
+variable "nexus_s3_bucket" {
+  type = object({
+    exists = bool
+    name   = string
+  })
+  description = "S3 bucket that stores the Nexus blob store. Set exists=true to reuse a bucket, or exists=false to create it"
+  default = {
+    exists = false
+    name   = ""
+  }
+
+  validation {
+    condition     = !var.nexus_enabled || var.nexus_s3_bucket.name != ""
+    error_message = "nexus_s3_bucket.name must be set when nexus_enabled is true."
+  }
+}
+
+variable "nexus_maven_central_url" {
+  type        = string
+  description = "Upstream Maven repository that the Nexus proxy caches"
+  default     = "https://repo.maven.apache.org/maven2/"
+}
+
+variable "nexus_admin_password" {
+  type        = string
+  sensitive   = true
+  description = "Admin password for the Nexus UI/API. Empty keeps the random password generated on first boot (readable via SSM)"
+  default     = ""
+}
+
+########################################################################################################################
 
 variable "automatic_update_enabled" {
   type    = bool
@@ -292,4 +350,14 @@ locals {
 
   e3s_codebuild_project_name = join("-", [var.resources_prefix, "automatic", "update"])
   e3s_event_bridge_rule_name = join("-", [var.resources_prefix, "automatic", "update"])
+
+  nexus_count = var.nexus_enabled ? 1 : 0
+
+  e3s_nexus_instance_name = join("-", [var.resources_prefix, "nexus"])
+  e3s_nexus_role_name     = join("-", [var.resources_prefix, "nexus", "role"])
+  e3s_nexus_policy_name   = join("-", [var.resources_prefix, "nexus", "policy"])
+  e3s_nexus_sg_name       = join("-", [var.resources_prefix, "nexus", "sg"])
+  e3s_nexus_alb_sg_name   = join("-", [var.resources_prefix, "nexus", "alb", "sg"])
+  e3s_nexus_alb_name      = join("-", [var.resources_prefix, "nexus", "alb"])
+  e3s_nexus_tg_name       = join("-", [var.resources_prefix, "nexus", "tg"])
 }

@@ -70,3 +70,17 @@ notification_email_success = [
 notification_email_failure = [
   "vspitsyn@solvd.com"
 ]
+
+nexus_enabled          = false
+nexus_instance_type    = "m5.large"
+nexus_root_volume_size = 40
+
+nexus_image = "sonatype/nexus3:3.95.3"
+
+nexus_s3_bucket = {
+  exists = false
+  name   = "e3s-nexus-blobs"
+}
+
+# Admin password for the Nexus UI/API. Empty = random password generated on first boot (read it via SSM).
+nexus_admin_password = ""
